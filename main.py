@@ -22,11 +22,12 @@ class Maps(pygame.sprite.Sprite):
     def select_map(self, level, width, height):
         self.level_map = pygame.image.load("levels/" + self.maps[level]).convert()
         self.level_map_rect = self.level_map.get_rect(midtop = (int(width/2), self.level_map.get_height()*(-1) + height))
-        pygame.mouse.set_pos([300, 300])
     
     def check_for_ending_of_map(self):
         if self.level_map_rect.top >= 0:
             self.map_speed = 0
+        else:
+            self.level_map_rect.y += self.map_speed
 
 
 class Player(pygame.sprite.Sprite):
@@ -112,8 +113,11 @@ class MediapipeHandler():
 
 class Settings():
     def __init__(self):
-        self.game_active = False
+        self.game_state = "menu"
         self.music_volume = 0
+    
+    def render_settings(self, screen):
+        screen.fill((214, 85, 37))
 
 
 class Menu():
@@ -133,13 +137,18 @@ class Menu():
         for i in range(len(self.button_images_rect)):
             screen.blit(self.button_images[i], self.button_images_rect[i])
     
-    def check_if_button_clicked(self, settings):
+    def check_if_button_clicked(self, settings, mpHandler):
         mouse_pos = pygame.mouse.get_pos()
         index = 0
         for img_rect in self.button_images_rect:
             if pygame.Rect.collidepoint(img_rect, mouse_pos) and pygame.mouse.get_pressed()[0]:
                 if index == 0:
-                    settings.game_active = True
+                    settings.game_state = "game"
+                elif index == 1:
+                    settings.game_state = "settings"
+                elif index == 2:
+                    mpHandler.cap.release()
+                    sys.exit()
 
             index += 1
 
@@ -174,7 +183,7 @@ def main():
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5) as hands:
         while True:
-            if settings.game_active:
+            if settings.game_state == "game":
                 #mediapipe
                 mpHandler.get_image()
                 if not mpHandler.success:
@@ -183,21 +192,23 @@ def main():
                 
                 results = mpHandler.get_image_result(hands)
                 mpHandler.get_hand_position(results, width, height, player)
-                mpHandler.draw_hand(results)
+                #mpHandler.draw_hand(results)
 
                 #pygame
                 check_for_events(mpHandler)
                 
                 maps.check_for_ending_of_map()
-                maps.level_map_rect.y += maps.map_speed
                 screen.blit(maps.level_map, maps.level_map_rect)
 
                 player.draw_player(screen)
                 player.check_for_collision(maps, width, height)
-            else:
+            elif settings.game_state == "menu":
                 menu.render_menu(screen)
                 check_for_events(mpHandler)
-                menu.check_if_button_clicked(settings)
+                menu.check_if_button_clicked(settings, mpHandler)
+            elif settings.game_state == "settings":
+                settings.render_settings(screen)
+                check_for_events(mpHandler)
             
             pygame.display.update()
             clock.tick(60)
