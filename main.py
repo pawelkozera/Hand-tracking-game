@@ -68,11 +68,28 @@ class MediapipeHandler():
         self.mp_hands = mp.solutions.hands
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_drawing_styles = mp.solutions.drawing_styles
-        self.cap = cv2.VideoCapture(0)
+        self.camera_indexes = []
+        self.cap = cv2.VideoCapture(-1)
         self.image, self.success = self.cap.read()
         self.x_speed = 1
         self.y_speed = 1.5
     
+    def find_camera_indexes(self):
+        self.camera_indexes.clear()
+        index = 0
+
+        while True:
+            cap = cv2.VideoCapture(index)
+            if not cap.read()[0]:
+                break
+            else:
+                self.camera_indexes.append(index)
+            cap.release()
+            index += 1
+
+        self.cap = cv2.VideoCapture(self.camera_indexes[0])
+        self.image, self.success = self.cap.read()
+
     def get_image(self):
         self.success, self.image = self.cap.read()
         self.image = cv2.flip(self.image, 1)
@@ -95,7 +112,7 @@ class MediapipeHandler():
                         if player.y_pos > height:
                             player.y_pos = height - player.border
     
-    def draw_hand(self, results):
+    def draw_hand(self, results, screen):
         self.image.flags.writeable = True
         self.image = cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR)
 
@@ -108,7 +125,9 @@ class MediapipeHandler():
                     self.mp_drawing_styles.get_default_hand_landmarks_style(),
                     self.mp_drawing_styles.get_default_hand_connections_style())
 
-        cv2.imshow('Hand', self.image)
+        opencv_to_pygame_img = pygame.image.frombuffer(self.image.tostring(), self.image.shape[1::-1], "RGB")
+        screen.blit(opencv_to_pygame_img, (0, 0))
+        #cv2.imshow('Hand', self.image)
 
 
 class Settings():
@@ -116,7 +135,7 @@ class Settings():
         self.game_state = "menu"
         self.music_volume = 0
     
-    def render_settings(self, screen):
+    def render_settings(self, screen, mpHandler, results):
         screen.fill((214, 85, 37))
 
 
@@ -159,6 +178,10 @@ def check_for_events(mpHandler):
             mpHandler.cap.release()
             sys.exit()
 
+#TO DO LIST
+#choosing camera at the beginning of the game
+#switching camera in the settings
+
 def main():
     pygame.init()
     clock = pygame.time.Clock()
@@ -172,6 +195,7 @@ def main():
     player = Player()
 
     mpHandler = MediapipeHandler()
+    mpHandler.find_camera_indexes()
 
     settings = Settings()
 
@@ -183,18 +207,17 @@ def main():
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5) as hands:
         while True:
+            #mediapipe
+            mpHandler.get_image()
+            if not mpHandler.success:
+                print("Ignoring empty camera frame.")
+                continue
+            
+            results = mpHandler.get_image_result(hands)
+            mpHandler.get_hand_position(results, width, height, player)
+            
+            #pygame
             if settings.game_state == "game":
-                #mediapipe
-                mpHandler.get_image()
-                if not mpHandler.success:
-                    print("Ignoring empty camera frame.")
-                    continue
-                
-                results = mpHandler.get_image_result(hands)
-                mpHandler.get_hand_position(results, width, height, player)
-                #mpHandler.draw_hand(results)
-
-                #pygame
                 check_for_events(mpHandler)
                 
                 maps.check_for_ending_of_map()
@@ -207,7 +230,7 @@ def main():
                 check_for_events(mpHandler)
                 menu.check_if_button_clicked(settings, mpHandler)
             elif settings.game_state == "settings":
-                settings.render_settings(screen)
+                settings.render_settings(screen, mpHandler, results)
                 check_for_events(mpHandler)
             
             pygame.display.update()
