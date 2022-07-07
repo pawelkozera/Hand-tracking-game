@@ -1,237 +1,12 @@
 import pygame
-import sys
-import os
-import mediapipe as mp
-import cv2
 
+import Maps
+import Menu
+import Player
+import MediapipeHandler
+import Settings
 
-class Maps(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.color_lose = (214, 85, 37)
-        self.color_win = (34, 177, 76)
-        self.level = 0
-        self.map_speed = 3
-        self.maps = []
-        for map_lvl in os.listdir("levels/"):
-            self.maps.append(map_lvl)
-
-        self.level_map = pygame.image.load("levels/" + self.maps[self.level]).convert()
-        self.level_map_rect = self.level_map.get_rect(midtop = (0, 0))
-    
-    def select_map(self, level, width, height):
-        self.level_map = pygame.image.load("levels/" + self.maps[level]).convert()
-        self.level_map_rect = self.level_map.get_rect(midtop = (int(width/2), self.level_map.get_height()*(-1) + height))
-    
-    def check_for_ending_of_map(self):
-        if self.level_map_rect.top >= 0:
-            self.map_speed = 0
-        else:
-            self.level_map_rect.y += self.map_speed
-
-
-class Player(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__
-        self.border = 4
-        self.color = "Black"
-        self.controler = "hand"
-        self.x_pos = 300
-        self.y_pos = 300
-    
-    def draw_player(self, screen):
-        if self.controler != "hand":
-            self.x_pos, self.y_pos = pygame.mouse.get_pos()
-
-        pygame.draw.circle(screen, self.color, (self.x_pos, self.y_pos), self.border)
-    
-    def check_for_collision(self, maps, width, height):
-        in_borders = self.x_pos - self.border > 0 and self.y_pos - self.border > 0 and self.y_pos + self.border < height and self.x_pos + self.border < width
-
-        if in_borders:
-            collision_positions = {
-                'right': [self.x_pos + self.border, self.y_pos],
-                'left': [self.x_pos - self.border, self.y_pos],
-                'up': [self.x_pos, self.y_pos + self.border],
-                'down': [self.x_pos, self.y_pos - self.border]
-            }
-
-            for position in collision_positions.values():
-                if maps.level_map.get_at((position[0], position[1] - maps.level_map_rect.y))[:3] == maps.color_win:
-                    print("win")
-                if maps.level_map.get_at((position[0], position[1] - maps.level_map_rect.y))[:3] == maps.color_lose:
-                    print("lose")
-
-
-class MediapipeHandler():
-    def __init__(self):
-        self.mp_hands = mp.solutions.hands
-        self.mp_drawing = mp.solutions.drawing_utils
-        self.mp_drawing_styles = mp.solutions.drawing_styles
-        self.camera_indexes = []
-        self.cap = cv2.VideoCapture(0)
-        self.success, self.image = self.cap.read()
-        self.x_speed = 1
-        self.y_speed = 1.5
-    
-    def find_camera_indexes(self):
-        self.camera_indexes.clear()
-        index = 0
-
-        while True:
-            cap = cv2.VideoCapture(index)
-            if not cap.read()[0]:
-                break
-            else:
-                self.camera_indexes.append(index)
-            cap.release()
-            index += 1
-
-    def get_image(self):
-        self.success, self.image = self.cap.read()
-        self.image = cv2.flip(self.image, 1)
-    
-    def get_image_result(self, hands):
-        self.image.flags.writeable = False
-        self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
-
-        return hands.process(self.image)
-
-    def get_hand_position(self, results, width, height, player):
-        if results.multi_hand_landmarks:
-            for hand_landmarks in results.multi_hand_landmarks:
-                for index, landmark in enumerate(hand_landmarks.landmark):
-                    if index == 8 and player.controler == "hand":
-                        player.x_pos = int(landmark.x * width * self.x_speed)
-                        player.y_pos = int(landmark.y * height * self.y_speed)
-                        if player.y_pos < 0:
-                            player.y_pos = 0 + player.border
-                        if player.y_pos > height:
-                            player.y_pos = height - player.border
-    
-    def draw_hand(self, results, screen):
-        self.image.flags.writeable = True
-        self.image = cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR)
-
-        if results.multi_hand_landmarks:
-            for hand_landmarks in results.multi_hand_landmarks:
-                self.mp_drawing.draw_landmarks(
-                    self.image,
-                    hand_landmarks,
-                    self.mp_hands.HAND_CONNECTIONS,
-                    self.mp_drawing_styles.get_default_hand_landmarks_style(),
-                    self.mp_drawing_styles.get_default_hand_connections_style())
-
-        opencv_to_pygame_img = pygame.image.frombuffer(self.image.tostring(), self.image.shape[1::-1], "RGB")
-        screen.blit(opencv_to_pygame_img, (0, 0))
-
-
-class Settings():
-    def __init__(self):
-        self.game_state = "menu"
-        self.music_volume = 0
-        self.font = pygame.font.SysFont('arial', 30)
-    
-    def render_settings(self, screen, mpHandler, results):
-        screen.fill((214, 85, 37))
-
-    def choose_camera(self, screen, screen_size, mpHandler, clock): # ADD NEW CAMERA CLASS
-        camera_rects = self.draw_available_cameras(screen, screen_size, mpHandler)
-        choosen_camera_index = 0
-        mpHandler.cap = cv2.VideoCapture(choosen_camera_index)
-        
-        while True:
-            new_camera_index = self.check_pressed_camera_button(camera_rects, mpHandler)
-            if new_camera_index != choosen_camera_index and new_camera_index != -1:
-                choosen_camera_index = new_camera_index
-                mpHandler.cap.release()
-                mpHandler.cap = cv2.VideoCapture(choosen_camera_index)
-
-            mpHandler.get_image()
-            opencv_to_pygame_img = pygame.image.frombuffer(mpHandler.image.tostring(), mpHandler.image.shape[1::-1], "RGB")
-            screen.blit(opencv_to_pygame_img, (int(screen_size[0]/2), int(screen_size[1] - 250)))
-
-            check_for_events(mpHandler)
-            pygame.display.update()
-            clock.tick(60)     
-
-    def draw_available_cameras(self, screen, screen_size, mpHandler):
-        screen.fill((214, 85, 37))
-        render_width = int(screen_size[0]/2)
-        render_height = int(screen_size[1]/5)
-
-        text_surface = self.font.render("Select camera", False, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=(render_width, render_height))
-        screen.blit(text_surface, text_rect)
-        render_height += 60
-
-        camera_rects = []
-        
-        for index in mpHandler.camera_indexes:
-            text = "Camera " + str(index)
-            text_surface = self.font.render(text, False, (0, 0, 0))
-            text_rect = text_surface.get_rect(center=(render_width, render_height))
-            camera_rects.append(text_rect)
-            screen.blit(text_surface, text_rect)
-            render_height += 40
-        
-        return camera_rects
-
-    def check_pressed_camera_button(self, rects, mpHandler):
-        choosen_camera_index = -1
-        mouse_pos = pygame.mouse.get_pos()
-        index = 0
-
-        for rect in rects:
-            if pygame.Rect.collidepoint(rect, mouse_pos) and pygame.mouse.get_pressed()[0]:
-                choosen_camera_index = index
-            index += 1
-        
-        return choosen_camera_index      
-
-
-class Menu():
-    def __init__(self, screen_size):
-        self.button_images = [pygame.image.load("menu/play.png").convert(), pygame.image.load("menu/settings.png").convert(), pygame.image.load("menu/quit.png").convert()]
-        self.button_images_rect = []
-
-        render_width = int(screen_size[0]/2)
-        render_height = int(screen_size[1]/2)
-        for img in self.button_images:
-            self.button_images_rect.append(img.get_rect(midtop = (render_width, render_height)))
-            render_height += 60
-    
-    def render_menu(self, screen):
-        screen.fill((214, 85, 37))
-
-        for i in range(len(self.button_images_rect)):
-            screen.blit(self.button_images[i], self.button_images_rect[i])
-    
-    def check_if_button_clicked(self, settings, mpHandler):
-        mouse_pos = pygame.mouse.get_pos()
-        index = 0
-        for img_rect in self.button_images_rect:
-            if pygame.Rect.collidepoint(img_rect, mouse_pos) and pygame.mouse.get_pressed()[0]:
-                if index == 0:
-                    settings.game_state = "game"
-                elif index == 1:
-                    settings.game_state = "settings"
-                elif index == 2:
-                    mpHandler.cap.release()
-                    sys.exit()
-
-            index += 1
-
-
-def check_for_events(mpHandler):
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            mpHandler.cap.release()
-            sys.exit()
-
-#TO DO LIST
-#choosing camera at the beginning of the game
-#switching camera in the settings
+# jesli w zakresie mapy jest gracz to gra idzie dalej jak nie to pauza i na poczatku gry tez pauza
 
 def main():
     pygame.init()
@@ -239,22 +14,23 @@ def main():
 
     clock = pygame.time.Clock()
     
-    screen_size = width, height = 800, 600
+    info = pygame.display.Info()
+    screen_size = width, height = info.current_w - 200, info.current_h - 200
     screen = pygame.display.set_mode(screen_size)
 
-    maps = Maps()
+    maps = Maps.Maps()
     maps.select_map(0, width, height)
 
-    player = Player()
+    player = Player.Player()
 
-    mpHandler = MediapipeHandler()
+    mpHandler = MediapipeHandler.MediapipeHandler()
     mpHandler.find_camera_indexes()
 
-    settings = Settings()
+    settings = Settings.Settings()
     
     settings.choose_camera(screen, screen_size, mpHandler, clock)
 
-    menu = Menu(screen_size)
+    menu = Menu.Menu(screen_size)
 
     with mpHandler.mp_hands.Hands(
     max_num_hands=1,
@@ -274,20 +50,20 @@ def main():
             
             #pygame
             if settings.game_state == "game":
-                check_for_events(mpHandler)
+                Settings.check_for_events(mpHandler)
                 
                 maps.check_for_ending_of_map()
                 screen.blit(maps.level_map, maps.level_map_rect)
 
                 player.draw_player(screen)
-                player.check_for_collision(maps, width, height)
+                player.check_for_collision(maps, width, height, screen)
             elif settings.game_state == "menu":
                 menu.render_menu(screen)
-                check_for_events(mpHandler)
+                Settings.check_for_events(mpHandler)
                 menu.check_if_button_clicked(settings, mpHandler)
             elif settings.game_state == "settings":
                 settings.render_settings(screen, mpHandler, results)
-                check_for_events(mpHandler)
+                Settings.check_for_events(mpHandler)
             
             pygame.display.update()
             clock.tick(60)
