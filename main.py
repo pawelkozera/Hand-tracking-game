@@ -6,8 +6,6 @@ import Player
 import MediapipeHandler
 import Settings
 
-# jesli w zakresie mapy jest gracz to gra idzie dalej jak nie to pauza i na poczatku gry tez pauza
-
 def main():
     pygame.init()
     pygame.font.init()
@@ -21,7 +19,7 @@ def main():
     maps = Maps.Maps()
     maps.select_map(0, width, height)
 
-    player = Player.Player()
+    player = Player.Player(screen_size)
 
     mpHandler = MediapipeHandler.MediapipeHandler()
     mpHandler.find_camera_indexes()
@@ -51,16 +49,21 @@ def main():
             #pygame
             if settings.game_state == "game":
                 Settings.check_for_events(mpHandler)
-                
-                maps.check_for_ending_of_map()
-                screen.blit(maps.level_map, maps.level_map_rect)
 
-                player.draw_player(screen)
-                player.check_for_collision(maps, width, height, screen)
+                if player.in_borders(maps, height) or not player.controler_hand:
+                    screen.fill((214, 85, 37))
+                    maps.check_for_ending_of_map()
+                    screen.blit(maps.level_map, maps.level_map_rect)
+                    player.draw_player(screen)
+                    player.check_for_collision(maps, screen)
+                else:
+                    player.draw_hand_not_detected(settings, screen, screen_size)
+
             elif settings.game_state == "menu":
                 menu.render_menu(screen)
                 Settings.check_for_events(mpHandler)
                 menu.check_if_button_clicked(settings, mpHandler)
+
             elif settings.game_state == "settings":
                 settings.render_settings(screen, mpHandler, results)
                 Settings.check_for_events(mpHandler)
