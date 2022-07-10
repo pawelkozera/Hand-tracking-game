@@ -1,6 +1,6 @@
 import pygame
 import cv2
-import sys
+import Mechanics
 
 class Settings():
     def __init__(self):
@@ -8,31 +8,47 @@ class Settings():
         self.music_volume = 0
         self.font = pygame.font.SysFont('arial', 30)
     
-    def render_settings(self, screen, mpHandler, results):
+    def render_settings(self, screen, mpHandler):
         screen.fill((214, 85, 37))
 
-    def choose_camera(self, screen, screen_size, mpHandler, clock):
-        camera_rects = self.draw_cameras_selection(screen, screen_size, mpHandler)
-        choosen_camera_index = 0
-        mpHandler.cap = cv2.VideoCapture(choosen_camera_index)
+    def choose_camera(self, screen, screen_size, mpHandler, clock, player):
+        buttons_rects = self.draw_cameras_selection(screen, screen_size, mpHandler)
+        choosen_camera_index = -1
+        selected_camera = False
         
         while True:
-            new_camera_index = self.check_pressed_camera_button(camera_rects, mpHandler)
+            new_camera_index = self.check_pressed_camera_button(buttons_rects)
 
-            if new_camera_index == len(camera_rects) - 1:
+            if new_camera_index == len(buttons_rects) - 1:
                 self.game_state = "menu"
                 break
+            
+            elif new_camera_index == len(buttons_rects) - 2:
+                player.controler_hand = False
+                if selected_camera:
+                    selected_camera = False
+                    mpHandler.cap.release()
 
-            if new_camera_index != choosen_camera_index and new_camera_index != -1:
+            elif new_camera_index == len(buttons_rects) - 3:
+                if selected_camera:
+                    mpHandler.cap.release()
+                selected_camera = True
+                mpHandler.cap = cv2.VideoCapture('https://192.168.43.1:8080/video')
+
+            elif new_camera_index != choosen_camera_index and new_camera_index != -1:
+                if selected_camera:
+                    mpHandler.cap.release()
+                selected_camera = True
                 choosen_camera_index = new_camera_index
-                mpHandler.cap.release()
                 mpHandler.cap = cv2.VideoCapture(choosen_camera_index)
 
-            mpHandler.get_image()
-            opencv_to_pygame_img = pygame.image.frombuffer(mpHandler.image.tostring(), mpHandler.image.shape[1::-1], "RGB")
-            screen.blit(opencv_to_pygame_img, (int(screen_size[0]/2), int(screen_size[1] - 250)))
+            if selected_camera:
+                player.controler_hand = True
+                mpHandler.get_image()
+                opencv_to_pygame_img = pygame.image.frombuffer(mpHandler.image.tostring(), mpHandler.image.shape[1::-1], "RGB")
+                screen.blit(opencv_to_pygame_img, (int(screen_size[0]/2), int(screen_size[1] - 250)))
 
-            check_for_events(mpHandler)
+            Mechanics.check_for_events(mpHandler)
             pygame.display.update()
             clock.tick(60)     
 
@@ -56,6 +72,18 @@ class Settings():
             screen.blit(text_surface, text_rect)
             render_height += 40
         
+        text_surface = self.font.render("IP Webcam (Not recommended)", False, (0, 0, 0))
+        text_rect = text_surface.get_rect(center=(render_width, render_height))
+        camera_rects.append(text_rect)
+        screen.blit(text_surface, text_rect)
+        render_height += 40
+
+        text_surface = self.font.render("Play with mouse", False, (0, 0, 0))
+        text_rect = text_surface.get_rect(center=(render_width, render_height))
+        camera_rects.append(text_rect)
+        screen.blit(text_surface, text_rect)
+        render_height += 40
+
         text_surface = self.font.render("Accept", False, (0, 0, 0))
         text_rect = text_surface.get_rect(center=(render_width, render_height + 40))
         camera_rects.append(text_rect)
@@ -63,7 +91,7 @@ class Settings():
 
         return camera_rects
 
-    def check_pressed_camera_button(self, rects, mpHandler):
+    def check_pressed_camera_button(self, rects):
         choosen_camera_index = -1
         mouse_pos = pygame.mouse.get_pos()
         index = 0
@@ -74,9 +102,3 @@ class Settings():
             index += 1
         
         return choosen_camera_index
-
-def check_for_events(mpHandler):
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            mpHandler.cap.release()
-            sys.exit()
