@@ -1,22 +1,8 @@
 import pygame
 import sys
 
-
-def state_handler(settings, mpHandler, player, maps, screen, screen_size, menu):
-    if settings.game_state == "game":
-        check_for_events(mpHandler)
-        game_state(player, maps, screen, settings, screen_size)
-
-    elif settings.game_state == "menu":
-        check_for_events(mpHandler)
-        menu_state(menu, screen, settings, mpHandler)
-
-    elif settings.game_state == "settings":
-        check_for_events(mpHandler)
-        settings_state(settings, screen, mpHandler)
-
-def game_state(player, maps, screen, settings, screen_size):
-    if player.in_borders(maps, screen_size[1]) or not player.controler_hand:
+def game_state_hand(player, maps, screen, settings, screen_size, results):
+    if player.in_borders(maps, screen_size[1]) and results.multi_hand_landmarks:
         screen.fill((214, 85, 37))
         maps.check_for_ending_of_map()
         screen.blit(maps.level_map, maps.level_map_rect)
@@ -24,6 +10,15 @@ def game_state(player, maps, screen, settings, screen_size):
         player.check_for_collision(maps, screen)
     else:
         player.draw_hand_not_detected(settings, screen, screen_size)
+
+def game_state_mouse(player, maps, screen, screen_size):
+    player.get_mouse_position()
+    if player.in_borders(maps, screen_size[1]):
+        screen.fill((214, 85, 37))
+        maps.check_for_ending_of_map()
+        screen.blit(maps.level_map, maps.level_map_rect)
+        player.draw_player(screen)
+        player.check_for_collision(maps, screen)
 
 def menu_state(menu, screen, settings, mpHandler):
     menu.render_menu(screen)

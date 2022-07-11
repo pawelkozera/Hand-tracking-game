@@ -19,17 +19,18 @@ class Settings():
         while True:
             new_camera_index = self.check_pressed_camera_button(buttons_rects)
 
-            if new_camera_index == len(buttons_rects) - 1:
+            if new_camera_index == len(buttons_rects) - 1: #accept
                 self.game_state = "menu"
                 break
             
-            elif new_camera_index == len(buttons_rects) - 2:
+            elif new_camera_index == len(buttons_rects) - 2: #mouse
                 player.controler_hand = False
+                choosen_camera_index = -1
                 if selected_camera:
                     selected_camera = False
                     mpHandler.cap.release()
 
-            elif new_camera_index == len(buttons_rects) - 3:
+            elif new_camera_index == len(buttons_rects) - 3: #IPwebcam
                 if selected_camera:
                     mpHandler.cap.release()
                 selected_camera = True
@@ -46,15 +47,24 @@ class Settings():
                 player.controler_hand = True
                 mpHandler.get_image()
                 opencv_to_pygame_img = pygame.image.frombuffer(mpHandler.image.tostring(), mpHandler.image.shape[1::-1], "RGB")
-                screen.blit(opencv_to_pygame_img, (int(screen_size[0]/2), int(screen_size[1] - 250)))
+                opencv_to_pygame_img = self.resize_camera_image(opencv_to_pygame_img, screen_size)
+
+                screen.blit(opencv_to_pygame_img, (int(screen_size[0]/2), int(screen_size[1]/4)))
 
             Mechanics.check_for_events(mpHandler)
             pygame.display.update()
-            clock.tick(60)     
+            clock.tick(60)
+
+    def resize_camera_image(self, opencv_to_pygame_img, screen_size):
+        size = opencv_to_pygame_img.get_size()
+        if size[0] > screen_size[0]/2 or size[1] > screen_size[1]/1.5:
+            opencv_to_pygame_img = pygame.transform.scale(opencv_to_pygame_img, (screen_size[0]/3, screen_size[1]/2))
+        
+        return opencv_to_pygame_img
 
     def draw_cameras_selection(self, screen, screen_size, mpHandler):
         screen.fill((214, 85, 37))
-        render_width = int(screen_size[0]/2)
+        render_width = int(screen_size[0]/4)
         render_height = int(screen_size[1]/5)
 
         text_surface = self.font.render("Select camera", False, (0, 0, 0))

@@ -49,13 +49,33 @@ def main():
                 mpHandler.get_hand_position(results, width, height, player)
                 
                 #pygame
-                Mechanics.state_handler(settings, mpHandler, player, maps, screen, screen_size, menu)
+                if settings.game_state == "game":
+                    Mechanics.check_for_events(mpHandler)
+                    Mechanics.game_state_hand(player, maps, screen, settings, screen_size, results)
+
+                elif settings.game_state == "menu":
+                    Mechanics.check_for_events(mpHandler)
+                    Mechanics.menu_state(menu, screen, settings, mpHandler)
+
+                elif settings.game_state == "settings":
+                    Mechanics.check_for_events(mpHandler)
+                    Mechanics.settings_state(settings, screen, mpHandler)
                 
                 pygame.display.update()
                 clock.tick(60)
     else:
         while True:
-            Mechanics.state_handler(settings, mpHandler, player, maps, screen, screen_size, menu)
+            if settings.game_state == "game":
+                Mechanics.check_for_events(mpHandler)
+                Mechanics.game_state_mouse(player, maps, screen, screen_size)
+
+            elif settings.game_state == "menu":
+                Mechanics.check_for_events(mpHandler)
+                Mechanics.menu_state(menu, screen, settings, mpHandler)
+
+            elif settings.game_state == "settings":
+                Mechanics.check_for_events(mpHandler)
+                Mechanics.settings_state(settings, screen, mpHandler)
             
             pygame.display.update()
             clock.tick(60)

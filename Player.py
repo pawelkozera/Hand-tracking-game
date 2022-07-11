@@ -9,10 +9,11 @@ class Player(pygame.sprite.Sprite):
         self.x_pos = int(screen_size[0]/2)
         self.y_pos = int(screen_size[1] - 100)
     
-    def draw_player(self, screen):
+    def get_mouse_position(self):
         if not self.controler_hand:
             self.x_pos, self.y_pos = pygame.mouse.get_pos()
-
+    
+    def draw_player(self, screen):
         pygame.draw.circle(screen, self.color, (self.x_pos, self.y_pos), self.border)
     
     def draw_hand_not_detected(self, settings, screen, screen_size):

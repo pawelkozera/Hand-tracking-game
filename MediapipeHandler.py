@@ -8,7 +8,7 @@ class MediapipeHandler():
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_drawing_styles = mp.solutions.drawing_styles
         self.camera_indexes = []
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(-1)
         self.success, self.image = self.cap.read()
         self.x_speed = 1
         self.y_speed = 1.5
