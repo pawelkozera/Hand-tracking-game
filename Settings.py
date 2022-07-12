@@ -13,11 +13,18 @@ class Settings():
 
     def choose_camera(self, screen, screen_size, mpHandler, clock, player):
         buttons_rects = self.draw_cameras_selection(screen, screen_size, mpHandler)
+        highlighted_button = -1
         choosen_camera_index = -1
         selected_camera = False
         
         while True:
             new_camera_index = self.check_pressed_camera_button(buttons_rects)
+
+            if new_camera_index != -1:
+                if highlighted_button != -1:
+                    self.draw_selected_option(buttons_rects, highlighted_button, screen, (0, 0, 0))
+                self.draw_selected_option(buttons_rects, new_camera_index, screen, (255, 255, 255))
+                highlighted_button = new_camera_index
 
             if new_camera_index == len(buttons_rects) - 1: #accept
                 self.game_state = "menu"
@@ -67,39 +74,47 @@ class Settings():
         render_width = int(screen_size[0]/4)
         render_height = int(screen_size[1]/5)
 
-        text_surface = self.font.render("Select camera", False, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=(render_width, render_height))
-        screen.blit(text_surface, text_rect)
+        self.draw_text("Select camera", render_width, render_height, screen, (0, 0, 0))
         render_height += 60
 
         camera_rects = []
         
         for index in mpHandler.camera_indexes:
             text = "Camera " + str(index)
-            text_surface = self.font.render(text, False, (0, 0, 0))
-            text_rect = text_surface.get_rect(center=(render_width, render_height))
+            text_rect = self.draw_text(text, render_width, render_height, screen, (0, 0, 0))
             camera_rects.append(text_rect)
-            screen.blit(text_surface, text_rect)
             render_height += 40
         
-        text_surface = self.font.render("IP Webcam (Not recommended)", False, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=(render_width, render_height))
+        text_rect = self.draw_text("IP Webcam (Not recommended)", render_width, render_height, screen, (0, 0, 0))
         camera_rects.append(text_rect)
-        screen.blit(text_surface, text_rect)
         render_height += 40
 
-        text_surface = self.font.render("Play with mouse", False, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=(render_width, render_height))
+        text_rect = self.draw_text("Play with mouse", render_width, render_height, screen, (0, 0, 0))
         camera_rects.append(text_rect)
-        screen.blit(text_surface, text_rect)
         render_height += 40
 
-        text_surface = self.font.render("Accept", False, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=(render_width, render_height + 40))
+        text_rect = text_rect = self.draw_text("Accept", render_width, render_height, screen, (0, 0, 0))
         camera_rects.append(text_rect)
-        screen.blit(text_surface, text_rect)
 
         return camera_rects
+    
+    def draw_selected_option(self, rect, index, screen, color):
+        if index == len(rect) - 1:
+            self.draw_text("Accept", rect[index].centerx, rect[index].centery, screen, color)
+        elif index == len(rect) - 2:
+            self.draw_text("Play with mouse", rect[index].centerx, rect[index].centery, screen, color)
+        elif index == len(rect) - 3:
+            self.draw_text("IP Webcam (Not recommended)", rect[index].centerx, rect[index].centery, screen, color)
+        else:
+            text = "Camera " + str(index)
+            self.draw_text(text, rect[index].centerx, rect[index].centery, screen, color)
+    
+    def draw_text(self, text, x, y, screen, color):
+        text_surface = self.font.render(text, False, color)
+        text_rect = text_surface.get_rect(center=(x, y))
+        screen.blit(text_surface, text_rect)
+
+        return text_rect
 
     def check_pressed_camera_button(self, rects):
         choosen_camera_index = -1
