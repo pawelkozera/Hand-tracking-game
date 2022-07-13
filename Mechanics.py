@@ -1,5 +1,5 @@
 import pygame
-import sys
+from sys import exit
 
 def game_state_hand(player, maps, screen, settings, screen_size, results):
     if player.in_borders(maps, screen_size[1]) and results.multi_hand_landmarks:
@@ -27,8 +27,7 @@ def menu_state(menu, screen, settings, mpHandler):
 def settings_state(settings, screen, mpHandler):
     settings.render_settings(screen, mpHandler)
 
-def check_for_events(mpHandler):
+def check_for_events():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            mpHandler.cap.release()
-            sys.exit()
+            exit()
