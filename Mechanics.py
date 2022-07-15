@@ -17,8 +17,8 @@ def game_state_mouse(player, maps, screen, screen_size):
         screen.fill((214, 85, 37))
         maps.check_for_ending_of_map()
         screen.blit(maps.level_map, maps.level_map_rect)
-        player.draw_player(screen)
         player.check_for_collision(maps, screen)
+        player.draw_player(screen)
 
 def menu_state(menu, screen, settings, mpHandler):
     menu.render_menu(screen)

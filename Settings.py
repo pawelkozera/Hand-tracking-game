@@ -34,10 +34,10 @@ class Settings():
             
             elif new_camera_index == len(buttons_rects) - 2: #mouse
                 player.controler_hand = False
-                choosen_camera_index = -1
                 if selected_camera:
                     selected_camera = False
                     mpHandler.cap.release()
+                choosen_camera_index = -1
 
             elif new_camera_index == len(buttons_rects) - 3: #IPwebcam
                 if selected_camera:
@@ -45,6 +45,7 @@ class Settings():
                 selected_camera = True
                 self.ip_webcam(screen, screen_size, mpHandler)
                 buttons_rects = self.draw_cameras_selection(screen, screen_size, mpHandler)
+                choosen_camera_index = -1
 
             elif new_camera_index != choosen_camera_index and new_camera_index != -1:
                 if selected_camera:
@@ -54,7 +55,7 @@ class Settings():
                 mpHandler.cap = cv2.VideoCapture(choosen_camera_index)
 
             if selected_camera:
-                if mpHandler.cap is None or not mpHandler.cap.isOpened():
+                if mpHandler.cap is None or not mpHandler.cap.isOpened(): #using camera after ip webcam
                     selected_camera = False
                     player.controler_hand = False
                     self.draw_text("Cannot open camera, using mouse instead.", screen_size[0]/2, screen_size[1]/4, screen, (0, 0, 0))

@@ -3,7 +3,7 @@ import pygame
 class Player(pygame.sprite.Sprite):
     def __init__(self, screen_size):
         super().__init__
-        self.border = 4
+        self.border = 5
         self.color = "Black"
         self.controler_hand = True
         self.x_pos = int(screen_size[0]/2)

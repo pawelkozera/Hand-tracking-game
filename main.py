@@ -69,7 +69,7 @@ def main():
     else:
         while True:
             if settings.game_state == "game":
-                pygame.mouse.set_visible(False)
+                pygame.mouse.set_visible(True)
                 Mechanics.check_for_events()
                 Mechanics.game_state_mouse(player, maps, screen, screen_size)
 
