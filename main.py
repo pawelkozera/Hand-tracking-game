@@ -18,7 +18,7 @@ def main():
     screen = pygame.display.set_mode(screen_size)
 
     maps = Maps.Maps()
-    maps.select_map(0, width, height)
+    maps.select_map(width, height)
 
     player = Player.Player(screen_size)
 
@@ -51,17 +51,17 @@ def main():
                 #pygame
                 if settings.game_state == "game":
                     pygame.mouse.set_visible(False)
-                    Mechanics.check_for_events()
+                    Mechanics.check_for_events(settings)
                     Mechanics.game_state_hand(player, maps, screen, settings, screen_size, results)
 
                 elif settings.game_state == "menu":
                     pygame.mouse.set_visible(True)
-                    Mechanics.check_for_events()
+                    Mechanics.check_for_events(settings)
                     Mechanics.menu_state(menu, screen, settings, mpHandler)
 
                 elif settings.game_state == "settings":
                     pygame.mouse.set_visible(True)
-                    Mechanics.check_for_events()
+                    Mechanics.check_for_events(settings)
                     Mechanics.settings_state(settings, screen, mpHandler)
                 
                 pygame.display.update()
@@ -70,17 +70,17 @@ def main():
         while True:
             if settings.game_state == "game":
                 pygame.mouse.set_visible(True)
-                Mechanics.check_for_events()
+                Mechanics.check_for_events(settings)
                 Mechanics.game_state_mouse(player, maps, screen, screen_size)
 
             elif settings.game_state == "menu":
                 pygame.mouse.set_visible(True)
-                Mechanics.check_for_events()
+                Mechanics.check_for_events(settings)
                 Mechanics.menu_state(menu, screen, settings, mpHandler)
 
             elif settings.game_state == "settings":
                 pygame.mouse.set_visible(True)
-                Mechanics.check_for_events()
+                Mechanics.check_for_events(settings)
                 Mechanics.settings_state(settings, screen, mpHandler)
             
             pygame.display.update()

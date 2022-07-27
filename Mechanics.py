@@ -7,7 +7,7 @@ def game_state_hand(player, maps, screen, settings, screen_size, results):
         maps.check_for_ending_of_map()
         screen.blit(maps.level_map, maps.level_map_rect)
         player.draw_player(screen)
-        player.check_for_collision(maps, screen)
+        player.check_for_collision(maps, screen, screen_size)
     else:
         player.draw_hand_not_detected(settings, screen, screen_size)
 
@@ -17,7 +17,7 @@ def game_state_mouse(player, maps, screen, screen_size):
         screen.fill((214, 85, 37))
         maps.check_for_ending_of_map()
         screen.blit(maps.level_map, maps.level_map_rect)
-        player.check_for_collision(maps, screen)
+        player.check_for_collision(maps, screen, screen_size)
         player.draw_player(screen)
 
 def menu_state(menu, screen, settings, mpHandler):
@@ -27,7 +27,11 @@ def menu_state(menu, screen, settings, mpHandler):
 def settings_state(settings, screen, mpHandler):
     settings.render_settings(screen, mpHandler)
 
-def check_for_events():
+def check_for_events(settings):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
+
+        if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    settings.game_state = "menu"

@@ -68,7 +68,7 @@ class Settings():
                     opencv_to_pygame_img = self.resize_camera_image(opencv_to_pygame_img, screen_size)
                     screen.blit(opencv_to_pygame_img, (int(screen_size[0]/2), int(screen_size[1]/4)))
 
-            Mechanics.check_for_events()
+            Mechanics.check_for_events(self)
             pygame.display.update()
 
     def ip_webcam(self, screen, screen_size, mpHandler):

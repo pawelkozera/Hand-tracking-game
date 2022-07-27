@@ -24,7 +24,7 @@ class Player(pygame.sprite.Sprite):
     def in_borders(self, maps, height):
         return self.x_pos - self.border > maps.level_map_rect.left and self.y_pos - self.border > 0 and self.y_pos + self.border < height and self.x_pos + self.border < maps.level_map_rect.right
 
-    def check_for_collision(self, maps, screen):
+    def check_for_collision(self, maps, screen, screen_size):
         collision_positions = {
             'right': [self.x_pos + self.border, self.y_pos],
             'left': [self.x_pos - self.border, self.y_pos],
@@ -34,7 +34,7 @@ class Player(pygame.sprite.Sprite):
 
         for position in collision_positions.values():
             if screen.get_at((position[0], position[1]))[:3] == maps.color_win:
-                print("win")
+                maps.next_map_after_win(screen_size)
             if screen.get_at((position[0], position[1]))[:3] == maps.color_lose:
-                print("lose")
+                maps.same_map_after_lose(screen_size)
         

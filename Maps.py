@@ -1,4 +1,5 @@
 import os
+from select import select
 import pygame
 
 class Maps(pygame.sprite.Sprite):
@@ -15,9 +16,18 @@ class Maps(pygame.sprite.Sprite):
         self.level_map = pygame.image.load("levels/" + self.maps[self.level]).convert()
         self.level_map_rect = self.level_map.get_rect(midtop = (0, 0))
     
-    def select_map(self, level, width, height):
-        self.level_map = pygame.image.load("levels/" + self.maps[level]).convert()
+    def select_map(self, width, height):
+        self.level_map = pygame.image.load("levels/" + self.maps[self.level]).convert()
         self.level_map_rect = self.level_map.get_rect(midtop = (int(width/2), self.level_map.get_height()*(-1) + height))
+    
+    def next_map_after_win(self, screen_size):
+        self.level += 1
+        self.map_speed = 3
+        self.select_map(screen_size[0], screen_size[1])
+    
+    def same_map_after_lose(self, screen_size):
+        self.map_speed = 3
+        self.select_map(screen_size[0], screen_size[1])
     
     def check_for_ending_of_map(self):
         if self.level_map_rect.top >= 0:
