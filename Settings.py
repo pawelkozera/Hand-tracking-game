@@ -4,16 +4,17 @@ import Mechanics
 from sys import exit
 
 class Settings():
-    def __init__(self):
+    def __init__(self, screen_size):
         self.game_state = "menu"
         self.music_volume = 0
+        self.screen_size = screen_size
         self.font = pygame.font.SysFont('arial', 30)
     
     def render_settings(self, screen, mpHandler):
         screen.fill((214, 85, 37))
 
-    def choose_camera(self, screen, screen_size, mpHandler, player):
-        buttons_rects = self.draw_cameras_selection(screen, screen_size, mpHandler)
+    def choose_camera(self, screen, mpHandler, player):
+        buttons_rects = self.draw_cameras_selection(screen, mpHandler)
         highlighted_button = -1
         choosen_camera_index = -1
         selected_camera = False
@@ -22,7 +23,7 @@ class Settings():
             new_camera_index = self.check_pressed_camera_button(buttons_rects)
 
             if new_camera_index != -1:
-                buttons_rects = self.draw_cameras_selection(screen, screen_size, mpHandler)
+                buttons_rects = self.draw_cameras_selection(screen, mpHandler)
                 if highlighted_button != -1:
                     self.draw_selected_option(buttons_rects, highlighted_button, screen, (0, 0, 0))
                 self.draw_selected_option(buttons_rects, new_camera_index, screen, (255, 255, 255))
@@ -43,8 +44,8 @@ class Settings():
                 if selected_camera:
                     mpHandler.cap.release()
                 selected_camera = True
-                self.ip_webcam(screen, screen_size, mpHandler)
-                buttons_rects = self.draw_cameras_selection(screen, screen_size, mpHandler)
+                self.ip_webcam(screen, mpHandler)
+                buttons_rects = self.draw_cameras_selection(screen, mpHandler)
                 choosen_camera_index = -1
 
             elif new_camera_index != choosen_camera_index and new_camera_index != -1:
@@ -55,31 +56,31 @@ class Settings():
                 mpHandler.cap = cv2.VideoCapture(choosen_camera_index)
 
             if selected_camera:
-                if mpHandler.cap is None or not mpHandler.cap.isOpened(): #using camera after ip webcam
+                if mpHandler.cap is None or not mpHandler.cap.isOpened():
                     selected_camera = False
                     player.controler_hand = False
-                    self.draw_text("Cannot open camera, using mouse instead.", screen_size[0]/2, screen_size[1]/4, screen, (0, 0, 0))
+                    self.draw_text("Cannot open camera, using mouse instead.", self.screen_size[0]/2, self.screen_size[1]/4, screen, (0, 0, 0))
                     mouse_rect = buttons_rects[len(buttons_rects) - 2]
                     self.draw_text("Play with mouse", mouse_rect.centerx, mouse_rect.centery, screen, (255, 255, 255))
                 else:
                     player.controler_hand = True
                     mpHandler.get_image()
                     opencv_to_pygame_img = pygame.image.frombuffer(mpHandler.image.tostring(), mpHandler.image.shape[1::-1], "RGB")
-                    opencv_to_pygame_img = self.resize_camera_image(opencv_to_pygame_img, screen_size)
-                    screen.blit(opencv_to_pygame_img, (int(screen_size[0]/2), int(screen_size[1]/4)))
+                    opencv_to_pygame_img = self.resize_camera_image(opencv_to_pygame_img)
+                    screen.blit(opencv_to_pygame_img, (int(self.screen_size[0]/2), int(self.screen_size[1]/4)))
 
             Mechanics.check_for_events(self)
             pygame.display.update()
 
-    def ip_webcam(self, screen, screen_size, mpHandler):
-        accept_rect = self.draw_ip_webcam_menu(screen, screen_size)
+    def ip_webcam(self, screen, mpHandler):
+        accept_rect = self.draw_ip_webcam_menu(screen)
         typing = True
         text = ""
         prev_text = text
         while typing:
             mouse_pos = pygame.mouse.get_pos()
             if pygame.Rect.collidepoint(accept_rect, mouse_pos) and pygame.mouse.get_pressed()[0]:
-                self.draw_text("Connecting with IP webcam...", screen_size[0]/2, screen_size[1]/2 + 80, screen, (255, 255, 255))
+                self.draw_text("Connecting with IP webcam...", self.screen_size[0]/2, self.screen_size[1]/2 + 80, screen, (255, 255, 255))
                 pygame.display.update()
                 mpHandler.cap = cv2.VideoCapture("https://" + text + "/video")
                 typing = False
@@ -87,16 +88,16 @@ class Settings():
             text = self.check_typing(text)
             if text != prev_text:
                 prev_text = text
-                accept_rect = self.draw_ip_webcam_menu(screen, screen_size)
-            self.draw_text(text, screen_size[0]/2, screen_size[1]/3, screen, (0, 0, 0))
+                accept_rect = self.draw_ip_webcam_menu(screen)
+            self.draw_text(text, self.screen_size[0]/2, self.screen_size[1]/3, screen, (0, 0, 0))
             pygame.display.update()
     
-    def draw_ip_webcam_menu(self, screen, screen_size):
+    def draw_ip_webcam_menu(self, screen):
         screen.fill((214, 85, 37))
-        self.draw_text("Example: 111.111.11.1:2020", screen_size[0]/2, screen_size[1]/5, screen, (0, 0, 0))
-        self.draw_text("Start typing", screen_size[0]/2, screen_size[1]/4, screen, (0, 0, 0))
+        self.draw_text("Example: 111.111.11.1:2020", self.screen_size[0]/2, self.screen_size[1]/5, screen, (0, 0, 0))
+        self.draw_text("Start typing", self.screen_size[0]/2, self.screen_size[1]/4, screen, (0, 0, 0))
 
-        accept_rect = self.draw_text("Accept", screen_size[0]/2, screen_size[1]/2, screen, (0, 0, 0))
+        accept_rect = self.draw_text("Accept", self.screen_size[0]/2, self.screen_size[1]/2, screen, (0, 0, 0))
         
         return accept_rect
     
@@ -112,17 +113,17 @@ class Settings():
         
         return text
 
-    def resize_camera_image(self, opencv_to_pygame_img, screen_size):
+    def resize_camera_image(self, opencv_to_pygame_img):
         size = opencv_to_pygame_img.get_size()
-        if size[0] > screen_size[0]/2 or size[1] > screen_size[1]/1.5:
-            opencv_to_pygame_img = pygame.transform.scale(opencv_to_pygame_img, (screen_size[0]/3, screen_size[1]/2))
+        if size[0] > self.screen_size[0]/2 or size[1] > self.screen_size[1]/1.5:
+            opencv_to_pygame_img = pygame.transform.scale(opencv_to_pygame_img, (self.screen_size[0]/3, self.screen_size[1]/2))
         
         return opencv_to_pygame_img
 
-    def draw_cameras_selection(self, screen, screen_size, mpHandler):
+    def draw_cameras_selection(self, screen, mpHandler):
         screen.fill((214, 85, 37))
-        render_width = int(screen_size[0]/4)
-        render_height = int(screen_size[1]/5)
+        render_width = int(self.screen_size[0]/4)
+        render_height = int(self.screen_size[1]/5)
 
         self.draw_text("Select camera", render_width, render_height, screen, (0, 0, 0))
         render_height += 60

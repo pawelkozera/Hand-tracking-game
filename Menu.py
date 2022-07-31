@@ -18,13 +18,14 @@ class Menu():
         for i in range(len(self.button_images_rect)):
             screen.blit(self.button_images[i], self.button_images_rect[i])
     
-    def check_if_button_clicked(self, settings, mpHandler):
+    def check_if_button_clicked(self, settings, mpHandler, maps):
         mouse_pos = pygame.mouse.get_pos()
         index = 0
         for img_rect in self.button_images_rect:
             if pygame.Rect.collidepoint(img_rect, mouse_pos) and pygame.mouse.get_pressed()[0]:
                 if index == 0:
                     settings.game_state = "game"
+                    maps.same_map_after_lose(settings.screen_size)
                 elif index == 1:
                     settings.game_state = "settings"
                 elif index == 2:

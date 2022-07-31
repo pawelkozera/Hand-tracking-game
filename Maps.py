@@ -2,9 +2,8 @@ import os
 from select import select
 import pygame
 
-class Maps(pygame.sprite.Sprite):
+class Maps():
     def __init__(self):
-        super().__init__()
         self.color_lose = (214, 85, 37)
         self.color_win = (34, 177, 76)
         self.level = 0
