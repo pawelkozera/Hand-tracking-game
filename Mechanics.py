@@ -1,4 +1,3 @@
-from turtle import screensize
 import pygame
 from sys import exit
 
@@ -19,8 +18,8 @@ def game_state_mouse(player, maps, screen, settings, streamer):
         screen.fill((214, 85, 37))
         maps.check_for_ending_of_map()
         screen.blit(maps.level_map, maps.level_map_rect)
-        streamer.render_streamer(screen, settings)
         streamer.render_dialogue(screen, settings, maps)
+        streamer.render_streamer(screen)
         player.check_for_collision(maps, screen, settings.screen_size)
         player.draw_player(screen)
 

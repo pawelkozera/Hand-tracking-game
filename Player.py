@@ -40,4 +40,5 @@ class Player():
                 maps.next_map_after_win(screen_size)
             if color == maps.color_lose:
                 maps.same_map_after_lose(screen_size)
+                pygame.mouse.set_pos([int(screen_size[0]/2), screen_size[1] - 100])
         

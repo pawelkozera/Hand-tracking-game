@@ -18,22 +18,6 @@ class Tests(unittest.TestCase):
         self.settings = Settings.Settings(screen_size)
         self.streamer = Streamer.Streamer("toast")
         self.streamer.texts[0] = "Hey Guys!"
-
-    def test_split_dialogue_and_surfaces_rects(self):
-        string = self.streamer.split_dialogue(self.settings, self.maps)
-        self.assertEqual(string, [" Hey Guys!"], "One line")
-
-        text_surfaces, text_rects = self.streamer.get_surfaces_and_rects(string, self.settings)
-        self.assertEqual(len(text_surfaces), 1, "Length of surfaces one line")
-        self.assertEqual(len(text_rects), 1, "Length of rects one line")
-
-        self.streamer.texts[0] = "Hey guys! This is your fantastic streamer! Disguised Toast!!!!!!!!!!!"
-        string = self.streamer.split_dialogue(self.settings, self.maps)
-        self.assertEqual(string, [" Hey guys! This is your fantastic streamer!", "Disguised Toast!!!!!!!!!!!"], "multi line")
-
-        text_surfaces, text_rects = self.streamer.get_surfaces_and_rects(string, self.settings)
-        self.assertEqual(len(text_surfaces), 2, "Length of surfaces multi line")
-        self.assertEqual(len(text_rects), 2, "Length of rects multi line")
     
     def test_next_map_after_win(self):
         current_lvl = self.maps.level
@@ -76,6 +60,41 @@ class Tests(unittest.TestCase):
         self.player.check_for_collision(self.maps, self.screen, self.settings.screen_size)
         self.assertEqual(self.maps.level, current_lvl, "Should have same lvl after collision")
         self.assertEqual(self.maps.map_speed, current_speed, "Should have same speed after collision")
+    
+    def test_split_dialogue_and_surfaces_rects(self):
+        string = self.streamer.split_dialogue(self.settings, self.maps)
+        self.assertEqual(string, ["Hey Guys!"], "One line")
+
+        text_surfaces, text_rects = self.streamer.get_surfaces_and_rects(string, self.settings)
+        self.assertEqual(len(text_surfaces), 1, "Length of surfaces one line")
+        self.assertEqual(len(text_rects), 1, "Length of rects one line")
+
+        self.streamer.texts[0] = "Hey guys! This is your fantastic streamer! Disguised Toast!!!!!!!!!!!"
+        string = self.streamer.split_dialogue(self.settings, self.maps)
+        self.assertEqual(string, ["Hey guys! This is your fantastic streamer!", "Disguised Toast!!!!!!!!!!!"], "multi line")
+
+        text_surfaces, text_rects = self.streamer.get_surfaces_and_rects(string, self.settings)
+        self.assertEqual(len(text_surfaces), 2, "Length of surfaces multi line")
+        self.assertEqual(len(text_rects), 2, "Length of rects multi line")
+    
+    def test_draw_triangle_under_bubble(self):
+        self.streamer.draw_triangle_under_bubble(50, 50, self.screen)
+        self.assertTupleEqual(self.streamer.tip_of_bubble_triangle, (50, 100), "Wrong points of triangle tip")
+    
+    def test_calculate_width_and_index_of_widest_rect(self):
+        _, text_rects = self.streamer.get_surfaces_and_rects(["test"], self.settings)
+        max_width = text_rects[0].width
+        index = 0
+        self.assertTupleEqual(self.streamer.calculate_width_and_index_of_widest_rect(text_rects), (max_width, index), "Wrong width or index of widest text rect")
+    
+    def test_calculate_size_of_bubble(self):
+        self.streamer.image_rect_text_bubble.height = 200
+        self.streamer.image_rect_text_bubble.width = 400
+        _, text_rects = self.streamer.get_surfaces_and_rects(["test"], self.settings)
+        width = text_rects[0].width + 30
+        height = width * 0.5
+        size_of_bubble = self.streamer.calculate_size_of_bubble(text_rects)
+        self.assertTupleEqual(size_of_bubble, (width, height), "Wrong size of bubble")
 
 
 if __name__ == "__main__":
