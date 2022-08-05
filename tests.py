@@ -15,7 +15,7 @@ class Tests(unittest.TestCase):
         self.player = Player.Player(screen_size)
         self.maps = Maps.Maps()
         self.maps.select_map(screen_size[0], screen_size[1])
-        self.settings = Settings.Settings(screen_size)
+        self.settings = Settings.Settings(screen_size, self.screen)
         self.streamer = Streamer.Streamer("toast")
         self.streamer.texts[0] = "Hey Guys!"
     
@@ -78,7 +78,7 @@ class Tests(unittest.TestCase):
         self.assertEqual(len(text_rects), 2, "Length of rects multi line")
     
     def test_draw_triangle_under_bubble(self):
-        self.streamer.draw_triangle_under_bubble(50, 50, self.screen)
+        self.streamer.draw_triangle_under_bubble(50, 50, 250, self.screen)
         self.assertTupleEqual(self.streamer.tip_of_bubble_triangle, (50, 100), "Wrong points of triangle tip")
     
     def test_calculate_width_and_index_of_widest_rect(self):

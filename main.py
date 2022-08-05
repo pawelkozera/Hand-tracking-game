@@ -7,6 +7,7 @@ import MediapipeHandler
 import Settings
 import Mechanics
 import Streamer
+import Chat
 
 def main():
     pygame.init()
@@ -18,7 +19,10 @@ def main():
     screen_size = width, height = info.current_w - 200, info.current_h - 200
     screen = pygame.display.set_mode(screen_size)
 
+    settings = Settings.Settings(screen_size, screen)
+
     streamer = Streamer.Streamer("toast")
+    chat = Chat.Chat()
     maps = Maps.Maps()
     maps.select_map(width, height)
 
@@ -26,10 +30,8 @@ def main():
 
     mpHandler = MediapipeHandler.MediapipeHandler()
     mpHandler.find_camera_indexes()
-
-    settings = Settings.Settings(screen_size)
     
-    settings.choose_camera(screen, mpHandler, player)
+    settings.choose_camera(mpHandler, player)
 
     menu = Menu.Menu(screen_size)
 
@@ -54,17 +56,17 @@ def main():
                 if settings.game_state == "game":
                     pygame.mouse.set_visible(False)
                     Mechanics.check_for_events(settings)
-                    Mechanics.game_state_hand(player, maps, screen, settings, results, streamer)
+                    Mechanics.game_state_hand(player, maps, settings, results, streamer, chat)
 
                 elif settings.game_state == "menu":
                     pygame.mouse.set_visible(True)
                     Mechanics.check_for_events(settings)
-                    Mechanics.menu_state(menu, screen, settings, mpHandler, maps)
+                    Mechanics.menu_state(menu, settings, mpHandler, maps)
 
                 elif settings.game_state == "settings":
                     pygame.mouse.set_visible(True)
                     Mechanics.check_for_events(settings)
-                    Mechanics.settings_state(settings, screen, mpHandler)
+                    Mechanics.settings_state(settings)
                 
                 pygame.display.update()
                 clock.tick(60)
@@ -73,17 +75,17 @@ def main():
             if settings.game_state == "game":
                 pygame.mouse.set_visible(False)
                 Mechanics.check_for_events(settings)
-                Mechanics.game_state_mouse(player, maps, screen, settings, streamer)
+                Mechanics.game_state_mouse(player, maps, settings, streamer, chat)
 
             elif settings.game_state == "menu":
                 pygame.mouse.set_visible(True)
                 Mechanics.check_for_events(settings)
-                Mechanics.menu_state(menu, screen, settings, mpHandler, maps)
+                Mechanics.menu_state(menu, settings, mpHandler, maps)
 
             elif settings.game_state == "settings":
                 pygame.mouse.set_visible(True)
                 Mechanics.check_for_events(settings)
-                Mechanics.settings_state(settings, screen, mpHandler)
+                Mechanics.settings_state(settings)
             
             pygame.display.update()
             clock.tick(60)

@@ -1,34 +1,49 @@
 import pygame
 from sys import exit
 
-def game_state_hand(player, maps, screen, settings, results, streamer):
+def game_state_hand(player, maps, settings, results, streamer, chat):
     if player.in_borders(maps, settings.screen_size[1]) and results.multi_hand_landmarks:
-        screen.fill((214, 85, 37))
+        settings.screen.fill((214, 85, 37))
         maps.check_for_ending_of_map()
-        screen.blit(maps.level_map, maps.level_map_rect)
-        #streamer.render_streamer(screen)
-        player.draw_player(screen)
-        player.check_for_collision(maps, screen, settings.screen_size)
-    else:
-        player.draw_hand_not_detected(settings, screen,)
+        settings.screen.blit(maps.level_map, maps.level_map_rect)
+    
+        streamer.render_dialogue(settings, maps)
+        streamer.render_streamer(settings.screen)
 
-def game_state_mouse(player, maps, screen, settings, streamer):
+        chat.draw_chat(maps, settings)
+        chat.check_passed_time()
+        chat.draw_text_to_chat(settings)
+        chat.draw_live_sign(settings)
+
+        player.draw_player(settings.screen)
+        player.check_for_collision(maps, settings)
+    else:
+        player.draw_hand_not_detected(settings)
+
+def game_state_mouse(player, maps, settings, streamer, chat):
     player.get_mouse_position()
     if player.in_borders(maps, settings.screen_size[1]):
-        screen.fill((214, 85, 37))
+        settings.screen.fill((214, 85, 37))
         maps.check_for_ending_of_map()
-        screen.blit(maps.level_map, maps.level_map_rect)
-        streamer.render_dialogue(screen, settings, maps)
-        streamer.render_streamer(screen)
-        player.check_for_collision(maps, screen, settings.screen_size)
-        player.draw_player(screen)
+        settings.screen.blit(maps.level_map, maps.level_map_rect)
 
-def menu_state(menu, screen, settings, mpHandler, maps):
-    menu.render_menu(screen)
+        streamer.render_dialogue(settings, maps)
+        streamer.render_streamer(settings.screen)
+
+        chat.draw_chat(maps, settings)
+        chat.check_passed_time()
+        chat.draw_text_to_chat(settings)
+        chat.draw_live_sign(settings)
+        
+        player.check_for_collision(maps, settings)
+        player.draw_player(settings.screen)
+
+def menu_state(menu, settings, mpHandler, maps):
+    menu.render_menu(settings.screen)
     menu.check_if_button_clicked(settings, mpHandler, maps)
 
-def settings_state(settings, screen, mpHandler):
-    settings.render_settings(screen, mpHandler)
+def settings_state(settings):
+    settings.render_settings()
 
 def check_for_events(settings):
     for event in pygame.event.get():

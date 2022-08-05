@@ -24,7 +24,7 @@ class Maps():
         self.map_speed = 3
         self.select_map(screen_size[0], screen_size[1])
     
-    def same_map_after_lose(self, screen_size):
+    def same_map(self, screen_size):
         self.map_speed = 3
         self.select_map(screen_size[0], screen_size[1])
     

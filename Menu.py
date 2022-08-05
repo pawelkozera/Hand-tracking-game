@@ -25,7 +25,7 @@ class Menu():
             if pygame.Rect.collidepoint(img_rect, mouse_pos) and pygame.mouse.get_pressed()[0]:
                 if index == 0:
                     settings.game_state = "game"
-                    maps.same_map_after_lose(settings.screen_size)
+                    maps.same_map(settings.screen_size)
                 elif index == 1:
                     settings.game_state = "settings"
                 elif index == 2:
