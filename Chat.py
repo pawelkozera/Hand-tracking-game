@@ -4,14 +4,14 @@ import random
 class Chat():
     def __init__(self):
         self.users = ["ralph", "max", "tobby", "robert", "master21", "cornelius"]
-        self.texts = ["haha", "start!! pogchamp pogchamp pogchamp pogchamp pogchamp pogchamp pogchamp pogchamp koniec!!"]
+        self.texts = ["haha", "pogcham", "let's go", "nice one"]
         self.used_texts = []
         self.used_users = []
         self.color_for_used_users = []
         
-        self.chats = ["imgs/chat_t.png"]
+        self.chats = [pygame.image.load("imgs/chat_t.png").convert_alpha()]
         self.chat_rect = None
-        self.live_t = ["imgs/live_t1.png", "imgs/live_t2.png"]
+        self.live_t = [pygame.image.load("imgs/live_t1.png").convert_alpha(), pygame.image.load("imgs/live_t2.png").convert_alpha()]
         self.live_t_index = 0
 
         self.time_since_live_animation = 0
@@ -111,7 +111,7 @@ class Chat():
             text = text + " " + string
             text_width, _ = settings.font_chat.size(text)
 
-            if text_width >= self.chat_rect.width - 8:
+            if text_width >= self.chat_rect.width - 14:
                 new_strings.append(text_prev)
                 text = string
                 text_prev = text
@@ -137,15 +137,13 @@ class Chat():
         x, _ = maps.level_map_rect.midright
         x = x + (settings.screen_size[0] - x)/2
         y = settings.screen_size[1]/2
-        chat_img = pygame.image.load(self.chats[0]).convert_alpha()
-        self.chat_rect = chat_img.get_rect(center = (x, y))
-        settings.screen.blit(chat_img, self.chat_rect)
+        self.chat_rect = self.chats[0].get_rect(center = (x, y))
+        settings.screen.blit(self.chats[0], self.chat_rect)
 
     def draw_live_sign(self, settings):
         x, y = self.chat_rect.topright
-        live_t_img = pygame.image.load(self.live_t[self.live_t_index]).convert_alpha()
-        live_t_rect = live_t_img.get_rect(bottomright = (x, y - 20))
-        settings.screen.blit(live_t_img, live_t_rect)
+        live_t_rect = self.live_t[self.live_t_index].get_rect(bottomright = (x, y - 20))
+        settings.screen.blit(self.live_t[self.live_t_index], live_t_rect)
     
     def check_passed_time(self):
         current_time = pygame.time.get_ticks()
@@ -160,8 +158,9 @@ class Chat():
 
             self.time_since_live_animation = current_time
         
-        if time_difference_new_text >= self.miliseconds_for_new_text:
-            self.select_text_to_show_on_chat()
-            self.miliseconds_for_new_text = random.randint(1, 2) * 1000
-            self.time_since_new_text = current_time
+        if len(self.texts) > 0:
+            if time_difference_new_text >= self.miliseconds_for_new_text:
+                self.select_text_to_show_on_chat()
+                self.miliseconds_for_new_text = random.randint(1, 2) * 1000
+                self.time_since_new_text = current_time
         

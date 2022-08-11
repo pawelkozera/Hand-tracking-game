@@ -31,15 +31,19 @@ class Player():
             'down': [self.x_pos, self.y_pos - self.border]
         }
 
-        collided = False
         for position in collision_positions.values():
             color = settings.screen.get_at((position[0], position[1]))[:3]
             
-            if color == maps.color_win and not collided:
-                collided = True
-                maps.next_map_after_win(settings.screen_size)
-                pygame.mouse.set_pos([int(settings.screen_size[0]/2), settings.screen_size[1] - 100])
-            if color == maps.color_lose:
-                maps.same_map(settings.screen_size)
-                pygame.mouse.set_pos([int(settings.screen_size[0]/2), settings.screen_size[1] - 100])
+            if color == maps.color_win:
+                return 1
+            elif color == maps.color_lose:
+                return 2
+            elif color == (0, 162, 232):
+                return 3
+            elif color == (255, 174, 201):
+                return 4
+            elif color == (239, 228, 176):
+                return 5
+        
+        return 0
         

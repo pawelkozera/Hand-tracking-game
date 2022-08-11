@@ -1,5 +1,6 @@
 import pygame
 import sys
+from Mechanics import reset_game
 
 class Menu():
     def __init__(self, screen_size):
@@ -18,7 +19,7 @@ class Menu():
         for i in range(len(self.button_images_rect)):
             screen.blit(self.button_images[i], self.button_images_rect[i])
     
-    def check_if_button_clicked(self, settings, mpHandler, maps):
+    def check_if_button_clicked(self, settings, mpHandler, maps, physics, level_events, streamer):
         mouse_pos = pygame.mouse.get_pos()
         index = 0
         for img_rect in self.button_images_rect:
@@ -26,6 +27,8 @@ class Menu():
                 if index == 0:
                     settings.game_state = "game"
                     maps.same_map(settings.screen_size)
+                    streamer.reset_animation_parameters()
+                    reset_game(settings, physics, level_events)
                 elif index == 1:
                     settings.game_state = "settings"
                 elif index == 2:

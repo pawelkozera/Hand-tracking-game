@@ -15,7 +15,7 @@ class Settings():
     def render_settings(self):
         self.screen.fill((214, 85, 37))
 
-    def choose_camera(self, mpHandler, player):
+    def choose_camera(self, mpHandler, player, physics, level_events, maps):
         buttons_rects = self.draw_cameras_selection(mpHandler)
         highlighted_button = -1
         choosen_camera_index = -1
@@ -128,6 +128,8 @@ class Settings():
         render_height = int(self.screen_size[1]/5)
 
         self.draw_text("Select camera", render_width, render_height, (0, 0, 0))
+        render_height += 40
+        self.draw_text("(not recommended, low performance)", render_width, render_height, (0, 0, 0))
         render_height += 60
 
         camera_rects = []
@@ -140,7 +142,7 @@ class Settings():
         
         text_rect = self.draw_text("IP Webcam", render_width, render_height, (0, 0, 0))
         camera_rects.append(text_rect)
-        render_height += 40
+        render_height += 80
 
         text_rect = self.draw_text("Play with mouse", render_width, render_height, (0, 0, 0))
         camera_rects.append(text_rect)
