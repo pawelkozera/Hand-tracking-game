@@ -9,6 +9,7 @@ class Settings():
         self.music_volume = 0
         self.screen_size = screen_size
         self.screen = screen
+        self.events = None
         self.font = pygame.font.Font('fonts/NotoSerif-Regular.ttf', 30)
         self.font_chat = pygame.font.Font('fonts/NotoSerif-Regular.ttf', 14)
     

@@ -48,6 +48,7 @@ def main():
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5) as hands:
             while True:
+                settings.events = pygame.event.get()
                 #mediapipe
                 mpHandler.get_image()
 
@@ -76,6 +77,7 @@ def main():
                 clock.tick(60)
     else:
         while True:
+            settings.events = pygame.event.get()
             if settings.game_state == "game":
                 pygame.mouse.set_visible(False)
                 Mechanics.game_state_mouse(player, maps, settings, streamer, chat, physics, level_events)

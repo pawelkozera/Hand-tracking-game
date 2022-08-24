@@ -77,9 +77,13 @@ def reset_game(settings, physics, level_events):
 
 def menu_state(menu, settings, mpHandler, maps, physics, level_events, streamer):
     settings.screen.fill((214, 85, 37))
-    menu.render_game_title(settings.screen)
-    menu.render_menu(settings.screen)
-    menu.check_if_button_clicked(settings, mpHandler, maps, physics, level_events, streamer)
+    if not menu.show_how_to_play:
+        menu.game_title_hover(settings.screen_size)
+        menu.render_game_title(settings.screen)
+        menu.render_menu(settings.screen)
+        menu.check_if_button_clicked(settings, mpHandler, maps, physics, level_events, streamer)
+    else:
+        menu.render_how_to_play(settings)
     check_for_events(settings)
 
 def settings_state(settings):
@@ -87,10 +91,10 @@ def settings_state(settings):
     check_for_events(settings)
 
 def check_for_events(settings):
-    for event in pygame.event.get():
+    for event in settings.events:
         if event.type == pygame.QUIT:
             exit()
 
         if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    settings.game_state = "menu"
+            if event.key == pygame.K_ESCAPE:
+                settings.game_state = "menu"
