@@ -8,15 +8,53 @@ class Chat():
         self.used_texts = []
         self.used_users = []
         self.color_for_used_users = []
+        self.users_in_chat = 147295
+        self.users_division = [147105, 147895]
         
         self.chats = [pygame.image.load("imgs/chat_t.png").convert_alpha()]
         self.chat_rect = None
         self.live_t = [pygame.image.load("imgs/live_t1.png").convert_alpha(), pygame.image.load("imgs/live_t2.png").convert_alpha()]
         self.live_t_index = 0
 
+        self.image_view_box = pygame.image.load("imgs/view_box.png").convert_alpha()
+        self.image_view_box_rect = self.image_view_box.get_rect(center = (0, 0))
+        self.image_view_eye = pygame.image.load("imgs/view_eye.png").convert_alpha()
+        self.image_view_eye_rect = self.image_view_eye.get_rect(center = (0, 0))
+
         self.time_since_live_animation = 0
         self.time_since_new_text = 0
+        self.time_since_viewers_update = 0
         self.miliseconds_for_new_text = 1000
+
+    def draw_view_box(self, screen):
+        x, y = self.chat_rect.midbottom
+        padding = 20
+        self.image_view_box_rect = self.image_view_box.get_rect(midtop = (x, y + padding))
+        screen.blit(self.image_view_box, self.image_view_box_rect)
+    
+    def draw_number_of_viewers(self, settings):
+        number_of_viewers = self.add_comma_to_viewers_number()
+        x, y = self.image_view_box_rect.center
+        number_of_viewers_rect = settings.draw_text(number_of_viewers, x, y, (255, 255, 255))
+
+        x, y = number_of_viewers_rect.midleft
+        padding = 10
+        self.image_view_eye_rect = self.image_view_eye.get_rect(midright = (x - padding, y))
+        settings.screen.blit(self.image_view_eye, self.image_view_eye_rect)
+    
+    def add_comma_to_viewers_number(self):
+        number_of_viewers = str(self.users_in_chat)
+        new_string = ""
+        count_numbers = 0
+
+        for number in reversed(number_of_viewers):
+            if count_numbers == 3:
+                new_string += ","
+                count_numbers = 0
+            new_string += number
+            count_numbers += 1
+
+        return new_string[::-1]
 
     def draw_text_to_chat(self, settings):
         x, y = self.chat_rect.bottomleft
@@ -149,6 +187,7 @@ class Chat():
         current_time = pygame.time.get_ticks()
         time_difference_live_animation = current_time - self.time_since_live_animation
         time_difference_new_text = current_time - self.time_since_new_text
+        time_difference_viewers_update = current_time - self.time_since_viewers_update
 
         if time_difference_live_animation >= 1000:
             if self.live_t_index == 1:
@@ -157,6 +196,11 @@ class Chat():
                 self.live_t_index = 1
 
             self.time_since_live_animation = current_time
+        
+        if time_difference_viewers_update >= 2000:
+            min, max = self.users_division
+            self.users_in_chat = random.randint(min, max)
+            self.time_since_viewers_update = current_time
         
         if len(self.texts) > 0:
             if time_difference_new_text >= self.miliseconds_for_new_text:

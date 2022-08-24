@@ -46,4 +46,8 @@ class Player():
                 return 5
         
         return 0
-        
+    
+    def check_for_collision_with_rect(self, rect):
+        if rect.collidepoint(self.x_pos, self.y_pos):
+            return True
+        return False

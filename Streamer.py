@@ -18,7 +18,7 @@ class Streamer():
         self.index_of_text = 0
         self.time_since_text = 0
         self.time_since_animation = 0
-    
+
     def render_streamer(self, screen):
         x, y = self.tip_of_bubble_triangle
         padding = 10

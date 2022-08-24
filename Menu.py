@@ -4,18 +4,26 @@ from Mechanics import reset_game
 
 class Menu():
     def __init__(self, screen_size):
-        self.button_images = [pygame.image.load("menu/play.png").convert(), pygame.image.load("menu/settings.png").convert(), pygame.image.load("menu/quit.png").convert()]
-        self.button_images_rect = []
-
         render_width = int(screen_size[0]/2)
-        render_height = int(screen_size[1]/2)
+
+        self.game_title_img = pygame.image.load("menu/game_title.png").convert()
+        self.game_title_rect = self.game_title_img.get_rect(center = (render_width, 100))
+        self.button_images = [
+                pygame.image.load("menu/play.png").convert(), 
+                pygame.image.load("menu/settings.png").convert(), 
+                pygame.image.load("menu/quit.png").convert()
+            ]
+
+        render_height = self.game_title_rect.bottomleft[1] + 50
+        self.button_images_rect = []
         for img in self.button_images:
             self.button_images_rect.append(img.get_rect(midtop = (render_width, render_height)))
-            render_height += 60
+            render_height += self.button_images_rect[0].height + 20
     
-    def render_menu(self, screen):
-        screen.fill((214, 85, 37))
+    def render_game_title(self, screen):
+        screen.blit(self.game_title_img, self.game_title_rect)
 
+    def render_menu(self, screen):
         for i in range(len(self.button_images_rect)):
             screen.blit(self.button_images[i], self.button_images_rect[i])
     

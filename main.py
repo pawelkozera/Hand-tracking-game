@@ -61,17 +61,14 @@ def main():
                 #pygame
                 if settings.game_state == "game":
                     pygame.mouse.set_visible(False)
-                    Mechanics.check_for_events(settings)
                     Mechanics.game_state_hand(player, maps, settings, results, streamer, chat, physics, level_events)
 
                 elif settings.game_state == "menu":
                     pygame.mouse.set_visible(True)
-                    Mechanics.check_for_events(settings)
                     Mechanics.menu_state(menu, settings, mpHandler, maps, physics, level_events, streamer)
 
                 elif settings.game_state == "settings":
                     pygame.mouse.set_visible(True)
-                    Mechanics.check_for_events(settings)
                     Mechanics.settings_state(settings)
                 
                 physics.space.step(1/50)
@@ -81,17 +78,14 @@ def main():
         while True:
             if settings.game_state == "game":
                 pygame.mouse.set_visible(False)
-                Mechanics.check_for_events(settings)
                 Mechanics.game_state_mouse(player, maps, settings, streamer, chat, physics, level_events)
 
             elif settings.game_state == "menu":
                 pygame.mouse.set_visible(True)
-                Mechanics.check_for_events(settings)
                 Mechanics.menu_state(menu, settings, mpHandler, maps, physics, level_events, streamer)
 
             elif settings.game_state == "settings":
                 pygame.mouse.set_visible(True)
-                Mechanics.check_for_events(settings)
                 Mechanics.settings_state(settings)
             
             physics.space.step(1/50)
