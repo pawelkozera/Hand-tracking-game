@@ -6,17 +6,56 @@ from sys import exit
 class Settings():
     def __init__(self, screen_size, screen):
         self.game_state = "menu"
-        self.music_volume = 0
         self.screen_size = screen_size
         self.screen = screen
         self.events = None
         self.font = pygame.font.Font('fonts/NotoSerif-Regular.ttf', 30)
         self.font_chat = pygame.font.Font('fonts/NotoSerif-Regular.ttf', 14)
-    
-    def render_settings(self):
-        self.screen.fill((214, 85, 37))
 
-    def choose_camera(self, mpHandler, player, physics, level_events, maps):
+        music_volume_border_rect = pygame.Rect(self.screen_size[0]/2, 100, 400, 50)
+        music_volume_border_rect.center = (self.screen_size[0]/2, 100)
+        music_volume_rect = pygame.Rect(self.screen_size[0]/2, 100, 400, 50)
+        music_volume_rect.midleft = music_volume_border_rect.midleft
+
+        voice_volume_border_rect = pygame.Rect(self.screen_size[0]/2, 0, 400, 50)
+        voice_volume_border_rect.midtop = (self.screen_size[0]/2, music_volume_border_rect.midtop[1] + 100)
+        voice_volume_rect = pygame.Rect(self.screen_size[0]/2, 100, 400, 50)
+        voice_volume_rect.midleft = voice_volume_border_rect.midleft
+
+        self.option_rects = [
+            ["Music volume", music_volume_border_rect, music_volume_rect, 50],
+            ["Voice volume", voice_volume_border_rect, voice_volume_rect, 50]
+        ]
+    
+    def render_settings(self, menu):
+        self.screen.fill((214, 85, 37))
+        menu.render_back_button(self.screen, self.screen_size[0]/2, self.screen_size[1] - 100)
+        self.render_music_settings()
+        self.music_settings_collision()
+
+        if menu.check_back_button_events(self):
+            self.game_state = "menu"
+
+    def render_music_settings(self, border_color = (0, 0, 0), bar_color = (189, 164, 109)):
+        for option_rect in self.option_rects:
+            music_volume_percentage_to_pixels = int(option_rect[3]/100*option_rect[1].width)
+            text_rect = self.draw_text(option_rect[0], self.screen_size[0]/2, option_rect[1].midtop[1] - 20, (255, 255, 255))
+            option_rect[2].width = music_volume_percentage_to_pixels
+            pygame.draw.rect(self.screen, bar_color, option_rect[2])
+            pygame.draw.rect(self.screen, border_color, option_rect[1], 2)
+    
+    def music_settings_collision(self):
+        for option_rect in self.option_rects:
+            mouse_pos = pygame.mouse.get_pos()
+            if pygame.Rect.collidepoint(option_rect[1], mouse_pos) and pygame.mouse.get_pressed()[0]:
+                max_volume = option_rect[1].width
+                x = mouse_pos[0] - option_rect[1].x
+                volume_percentage = int(x/max_volume  * 100)
+                if volume_percentage == 99:
+                    volume_percentage = 100
+                option_rect[3] = volume_percentage
+
+    def choose_camera(self, mpHandler, player):
         buttons_rects = self.draw_cameras_selection(mpHandler)
         highlighted_button = -1
         choosen_camera_index = -1

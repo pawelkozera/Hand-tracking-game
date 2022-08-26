@@ -39,7 +39,7 @@ def main():
 
     menu = Menu.Menu(screen_size)
 
-    #settings.choose_camera(mpHandler, player, physics, level_events, maps)
+    #settings.choose_camera(mpHandler, player)
 
     if player.controler_hand:
         with mpHandler.mp_hands.Hands(
@@ -70,7 +70,7 @@ def main():
 
                 elif settings.game_state == "settings":
                     pygame.mouse.set_visible(True)
-                    Mechanics.settings_state(settings)
+                    Mechanics.settings_state(settings, menu)
                 
                 physics.space.step(1/50)
                 pygame.display.update()
@@ -88,7 +88,7 @@ def main():
 
             elif settings.game_state == "settings":
                 pygame.mouse.set_visible(True)
-                Mechanics.settings_state(settings)
+                Mechanics.settings_state(settings, menu)
             
             physics.space.step(1/50)
             pygame.display.update()

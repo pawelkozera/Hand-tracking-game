@@ -68,23 +68,26 @@ class Menu():
             screen.blit(self.button_images[i], self.button_images_rect[i])
     
     def render_how_to_play(self, settings):
-        def check_back_button_events():
-            for event in settings.events:
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_pos = pygame.mouse.get_pos()
-                    if pygame.Rect.collidepoint(self.back_button_rect, mouse_pos):
-                        self.show_how_to_play = False
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        self.show_how_to_play = False
-
         x, y = settings.screen_size
 
         settings.screen.fill((214, 85, 37))
         settings.screen.blit(self.how_to_player_instruction_img, self.how_to_player_instruction_rect)
         self.render_back_button(settings.screen, x/2, y - 200)
-        check_back_button_events()
+        if self.check_back_button_events(settings):
+            self.show_how_to_play = False
     
+    def check_back_button_events(self, settings):
+        for event in settings.events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if pygame.Rect.collidepoint(self.back_button_rect, mouse_pos):
+                    return True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return True
+        
+        return False
+
     def render_back_button(self, screen, x, y):
         self.back_button_rect = self.back_button_img.get_rect(center = (x, y))
         screen.blit(self.back_button_img, self.back_button_rect)

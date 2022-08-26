@@ -86,8 +86,8 @@ def menu_state(menu, settings, mpHandler, maps, physics, level_events, streamer)
         menu.render_how_to_play(settings)
     check_for_events(settings)
 
-def settings_state(settings):
-    settings.render_settings()
+def settings_state(settings, menu):
+    settings.render_settings(menu)
     check_for_events(settings)
 
 def check_for_events(settings):
