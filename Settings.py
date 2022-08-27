@@ -22,9 +22,21 @@ class Settings():
         voice_volume_rect = pygame.Rect(self.screen_size[0]/2, 100, 400, 50)
         voice_volume_rect.midleft = voice_volume_border_rect.midleft
 
+        fake_option_border_rect = pygame.Rect(self.screen_size[0]/2, 0, 400, 50)
+        fake_option_border_rect.midtop = (self.screen_size[0]/2, voice_volume_border_rect.midtop[1] + 100)
+        fake_option_rect = pygame.Rect(self.screen_size[0]/2, 100, 400, 50)
+        fake_option_rect.midleft = fake_option_border_rect.midleft
+
+        fake2_option_border_rect = pygame.Rect(self.screen_size[0]/2, 0, 400, 50)
+        fake2_option_border_rect.midtop = (self.screen_size[0]/2, fake_option_border_rect.midtop[1] + 100)
+        fake2_option_rect = pygame.Rect(self.screen_size[0]/2, 100, 400, 50)
+        fake2_option_rect.midleft = fake2_option_border_rect.midleft
+
         self.option_rects = [
             ["Music volume", music_volume_border_rect, music_volume_rect, 50],
-            ["Voice volume", voice_volume_border_rect, voice_volume_rect, 50]
+            ["Voice volume", voice_volume_border_rect, voice_volume_rect, 50],
+            ["Resolution", fake_option_border_rect, fake_option_rect, 100],
+            ["Quantum Turing machine", fake2_option_border_rect, fake2_option_rect, 69]
         ]
     
     def render_settings(self, menu):
@@ -39,7 +51,7 @@ class Settings():
     def render_music_settings(self, border_color = (0, 0, 0), bar_color = (189, 164, 109)):
         for option_rect in self.option_rects:
             music_volume_percentage_to_pixels = int(option_rect[3]/100*option_rect[1].width)
-            text_rect = self.draw_text(option_rect[0], self.screen_size[0]/2, option_rect[1].midtop[1] - 20, (255, 255, 255))
+            self.draw_text(option_rect[0], self.screen_size[0]/2, option_rect[1].midtop[1] - 20, (255, 255, 255))
             option_rect[2].width = music_volume_percentage_to_pixels
             pygame.draw.rect(self.screen, bar_color, option_rect[2])
             pygame.draw.rect(self.screen, border_color, option_rect[1], 2)

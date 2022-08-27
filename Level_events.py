@@ -5,6 +5,7 @@ import math
 class Level_events():
     def __init__(self):
         self.events_enabled = False
+        self.ending_check_points = [False, False]
         self.y_position_for_animation = 0
         self.speed_of_increasing_y = 5
         self.curse_words = []
@@ -201,6 +202,7 @@ class Level_events():
                 how_well_player_did = "You should practice a little, but I can see the potential."
             else:
                 how_well_player_did = "Okay, maybe that's not for you."
+                self.ending_check_points[0] = True
 
             streamer.texts = [
                     curse_string,
@@ -286,6 +288,8 @@ class Level_events():
         y = maps.level_map_rect.y
         buy_zone_rect = pygame.draw.rect(settings.screen, (0, 0, 0), (x, y, 400, 800), 1)
         budget = self.add_up_clothes_price_in_buy_zone(buy_zone_rect)
+
+        self.ending_check_points[1] = True if budget > 0 else False
         
         if self.check_if_dressed(buy_zone_rect):
             pygame.draw.circle(settings.screen, maps.color_win, (x + 350, y + 30), 25)
