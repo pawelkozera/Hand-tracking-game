@@ -3,7 +3,7 @@ import random
 
 class Streamer():
     def __init__(self, name):
-        self.image_text_bubble = pygame.image.load("imgs/text_bubble.png").convert_alpha()
+        self.image_text_bubble = pygame.image.load("avatars/text_bubble.png").convert_alpha()
         self.image_rect_text_bubble = self.image_text_bubble.get_rect(midtop = (0, 50))
         self.images = [
             pygame.image.load("avatars/" + name + "0.png").convert_alpha(), 

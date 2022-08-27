@@ -11,14 +11,14 @@ class Chat():
         self.users_in_chat = 147295
         self.users_division = [147105, 147895]
         
-        self.chats = [pygame.image.load("imgs/chat_t.png").convert_alpha()]
+        self.chats = [pygame.image.load("chat/chat_t.png").convert_alpha()]
         self.chat_rect = None
-        self.live_t = [pygame.image.load("imgs/live_t1.png").convert_alpha(), pygame.image.load("imgs/live_t2.png").convert_alpha()]
+        self.live_t = [pygame.image.load("chat/live_t1.png").convert_alpha(), pygame.image.load("chat/live_t2.png").convert_alpha()]
         self.live_t_index = 0
 
-        self.image_view_box = pygame.image.load("imgs/view_box.png").convert_alpha()
+        self.image_view_box = pygame.image.load("chat/view_box.png").convert_alpha()
         self.image_view_box_rect = self.image_view_box.get_rect(center = (0, 0))
-        self.image_view_eye = pygame.image.load("imgs/view_eye.png").convert_alpha()
+        self.image_view_eye = pygame.image.load("chat/view_eye.png").convert_alpha()
         self.image_view_eye_rect = self.image_view_eye.get_rect(center = (0, 0))
 
         self.time_since_live_animation = 0
