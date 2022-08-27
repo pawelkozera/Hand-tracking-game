@@ -1,3 +1,4 @@
+import enum
 import pygame
 import random
 
@@ -183,6 +184,18 @@ class Chat():
         live_t_rect = self.live_t[self.live_t_index].get_rect(bottomright = (x, y - 20))
         settings.screen.blit(self.live_t[self.live_t_index], live_t_rect)
     
+    def load_chat_users_from_file(self, how_many_to_load = None):
+        self.users.clear()
+        with open("chat/nicknames.txt", "r") as file:
+            if how_many_to_load is None:
+                for user in file:
+                    self.users.append(user.strip())
+            else:
+                for index, user in enumerate(file):
+                    if index >= how_many_to_load:
+                        break
+                    self.users.append(user.strip())
+
     def check_passed_time(self):
         current_time = pygame.time.get_ticks()
         time_difference_live_animation = current_time - self.time_since_live_animation
