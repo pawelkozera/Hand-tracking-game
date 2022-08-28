@@ -1,14 +1,14 @@
-import enum
 import pygame
-import random
+from random import randint, choice
+from collections import deque
 
 class Chat():
     def __init__(self):
-        self.users = ["ralph", "max", "tobby", "robert", "master21", "cornelius"]
-        self.texts = ["haha", "pogcham", "let's go", "nice one"]
-        self.used_texts = []
-        self.used_users = []
-        self.color_for_used_users = []
+        self.users = ["max"]
+        self.texts = ["asd", "123", "345"]
+        self.used_texts = deque()
+        self.used_users = deque()
+        self.color_for_used_users = deque()
         self.users_in_chat = 147295
         self.users_division = [147105, 147895]
         
@@ -100,7 +100,7 @@ class Chat():
     def draw_text_with_split(self, settings, new_strings, height_padding, font_height, x, y, color_index):
         last_text_surface = settings.font_chat.render(new_strings[-1], True, (255, 255, 255))
         last_text_rect = last_text_surface.get_rect(bottomleft=(x + 8, y - 10 - height_padding))
-
+        
         if last_text_rect.y <= self.chat_rect.y + 64:
             self.remove_used_text_from_chat()
         else:
@@ -129,14 +129,14 @@ class Chat():
         return height_padding
     
     def remove_used_text_from_chat(self):
-        self.used_texts.pop(0)
-        self.used_users.pop(0)
-        self.color_for_used_users.pop(0)
+        self.used_texts.popleft()
+        self.used_users.popleft()
+        self.color_for_used_users.popleft()
 
     def random_color(self):
-        r = random.randint(50, 255)
-        g = random.randint(50, 255)
-        b = random.randint(50, 255)
+        r = randint(50, 255)
+        g = randint(50, 255)
+        b = randint(50, 255)
 
         return (r, g, b)
 
@@ -164,12 +164,12 @@ class Chat():
     def select_text_to_show_on_chat(self):
         not_used_texts = list(set(self.texts)-set(self.used_texts))
         if len(not_used_texts) == 0:
-            text = random.choice(self.texts)
+            text = choice(self.texts)
             self.used_texts.append(text)
         else:
-            text = random.choice(not_used_texts)
+            text = choice(not_used_texts)
             self.used_texts.append(text)
-        self.used_users.append(random.choice(self.users))
+        self.used_users.append(choice(self.users))
         self.color_for_used_users.append(self.random_color())
     
     def draw_chat(self, maps, settings):
@@ -183,6 +183,13 @@ class Chat():
         x, y = self.chat_rect.topright
         live_t_rect = self.live_t[self.live_t_index].get_rect(bottomright = (x, y - 20))
         settings.screen.blit(self.live_t[self.live_t_index], live_t_rect)
+    
+    def change_number_of_users_in_chat(self, new_number_of_users):
+        self.users_in_chat = new_number_of_users
+        min = new_number_of_users - randint(1, int(new_number_of_users/8))
+        max = new_number_of_users + randint(1, int(new_number_of_users/8))
+        self.users_division[0] = min
+        self.users_division[1] = max
     
     def load_chat_users_from_file(self, how_many_to_load = None):
         self.users.clear()
@@ -212,12 +219,12 @@ class Chat():
         
         if time_difference_viewers_update >= 2000:
             min, max = self.users_division
-            self.users_in_chat = random.randint(min, max)
+            self.users_in_chat = randint(min, max)
             self.time_since_viewers_update = current_time
         
         if len(self.texts) > 0:
             if time_difference_new_text >= self.miliseconds_for_new_text:
                 self.select_text_to_show_on_chat()
-                self.miliseconds_for_new_text = random.randint(1, 2) * 1000
+                self.miliseconds_for_new_text = randint(1, 2) * 1000
                 self.time_since_new_text = current_time
         

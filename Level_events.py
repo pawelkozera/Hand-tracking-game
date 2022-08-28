@@ -273,7 +273,7 @@ class Level_events():
             streamer.texts = [
                 ""
             ]
-
+            
             self.load_clothes_img(maps)
             self.list_of_events = [False]
 
