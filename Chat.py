@@ -4,7 +4,7 @@ from collections import deque
 
 class Chat():
     def __init__(self):
-        self.users = ["max"]
+        self.users = ["Max"]
         self.texts = ["asd", "123", "345"]
         self.used_texts = deque()
         self.used_users = deque()
@@ -194,14 +194,28 @@ class Chat():
     def load_chat_users_from_file(self, how_many_to_load = None):
         self.users.clear()
         with open("chat/nicknames.txt", "r") as file:
+            lines = (line for line in file)
             if how_many_to_load is None:
-                for user in file:
+                for user in lines:
                     self.users.append(user.strip())
             else:
-                for index, user in enumerate(file):
+                for index, user in enumerate(lines):
                     if index >= how_many_to_load:
                         break
                     self.users.append(user.strip())
+    
+    def load_texts_from_file(self, how_many_to_load = None):
+        self.texts.clear()
+        with open("chat/texts.txt", "r") as file:
+            lines = (line for line in file)
+            if how_many_to_load is None:
+                for text in lines:
+                    self.texts.append(text.strip())
+            else:
+                for index, text in enumerate(lines):
+                    if index >= how_many_to_load:
+                        break
+                    self.texts.append(text.strip())
 
     def check_passed_time(self):
         current_time = pygame.time.get_ticks()

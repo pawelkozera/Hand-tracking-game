@@ -9,6 +9,7 @@ class Level_events():
         self.y_position_for_animation = 0
         self.speed_of_increasing_y = 5
         self.curse_words = []
+        self.budget = 40
 
         self.list_of_events = []
         self.lmp_pressed = False
@@ -288,6 +289,17 @@ class Level_events():
         y = maps.level_map_rect.y
         buy_zone_rect = pygame.draw.rect(settings.screen, (0, 0, 0), (x, y, 400, 800), 1)
         budget = self.add_up_clothes_price_in_buy_zone(buy_zone_rect)
+
+        if self.budget != budget:
+            self.budget = budget
+            if budget <= -100 and budget > -140:
+                chat.change_number_of_users_in_chat(60)
+            elif budget <= -140 and budget > -540:
+                chat.change_number_of_users_in_chat(110)
+            elif budget <= -600:
+                chat.change_number_of_users_in_chat(180)
+            else:
+                chat.change_number_of_users_in_chat(30)
 
         self.ending_check_points[1] = True if budget > 0 else False
         
