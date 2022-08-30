@@ -2,24 +2,23 @@ import pygame
 import random
 import math
 
+import Level_events_clothes
+
 class Level_events():
     def __init__(self):
+        self.clothes = None
+
         self.events_enabled = False
         self.ending_check_points = [False, False]
         self.y_position_for_animation = 0
         self.speed_of_increasing_y = 5
         self.curse_words = []
-        self.budget = 40
 
         self.list_of_events = []
         self.lmp_pressed = False
         self.moving_points_lines = [] # [x_start, y_start, x_end, y_end, width]
         self.moving_points_circle_radius = [] # [x, y, r, angle, width]
         self.moving_points_rects = [] # [x_start, y_start, x_end, y_end, x_left_border, x_right_border, flag_is_moving_left]
-
-        self.clothes_images = []
-        self.clothes_image_rect = []
-        self.index_of_drag_rect = 0
     
     def select_events_for_level(self, maps, physics, settings, streamer, chat, player):
         if maps.level == 0:
@@ -34,6 +33,8 @@ class Level_events():
             self.level_4(streamer, chat, maps, settings)
         elif maps.level == 5:
             self.level_5(streamer, chat, maps, settings, player)
+        elif maps.level == 6:
+            self.level_6(streamer, chat, maps, settings, player)
     
     def level_0(self, streamer, chat):
         if not self.events_enabled:
@@ -291,43 +292,33 @@ class Level_events():
                 "$$$$$$", "$$$", "$$$$$$$$$$$$$", "buy watch", "waaaaaaaaatch",
                 "i watch you buying watch",
             ]
-            
-            self.load_clothes_img(maps)
+
+            self.clothes = Level_events_clothes.Level_events_clothes()
+            self.clothes.load_clothes_img(maps)
             self.list_of_events = [False]
 
             self.events_enabled = True
         
         mouse_buttons = pygame.mouse.get_pressed()
         if mouse_buttons[0]:
-            self.drag_clothes(player)
+            self.clothes.drag_clothes(player)
         else:
-            self.list_of_events[0] = False
+            self.clothes.is_dragged = False
         x = maps.level_map_rect.x
         y = maps.level_map_rect.y
         buy_zone_rect = pygame.draw.rect(settings.screen, (0, 0, 0), (x, y, 400, 800), 1)
-        budget = self.add_up_clothes_price_in_buy_zone(buy_zone_rect)
-
-        if self.budget != budget:
-            self.budget = budget
-            if budget <= -100 and budget > -140:
-                chat.change_number_of_users_in_chat(60)
-                chat.load_chat_users_from_file(60)
-            elif budget <= -140 and budget > -600:
-                chat.change_number_of_users_in_chat(110)
-                chat.load_chat_users_from_file(60)
-            elif budget <= -600:
-                chat.change_number_of_users_in_chat(180)
-                chat.load_chat_users_from_file(60)
-            else:
-                chat.change_number_of_users_in_chat(30)
-                chat.load_chat_users_from_file(15)
+        budget = self.clothes.add_up_clothes_price_in_buy_zone(buy_zone_rect)
+        self.clothes.check_for_adding_viewers(chat, budget)
 
         self.ending_check_points[1] = True if budget > 0 else False
 
-        self.draw_clothes(settings.screen)
-        self.draw_budget(budget, settings, x, y)
-        if self.check_if_dressed(buy_zone_rect):
+        self.clothes.draw_clothes(settings.screen)
+        self.clothes.draw_budget(budget, settings, x, y)
+        if self.clothes.check_if_dressed(buy_zone_rect):
             pygame.draw.circle(settings.screen, maps.color_win, (x + 350, y + 30), 25)
+
+    def level_6(self, streamer, chat, maps, settings, player):
+        pass
 
     def collision_handler(self, collision, maps, player):
         if maps.level == 3:
@@ -343,80 +334,6 @@ class Level_events():
         y = y + screen_height
 
         return y + settings.screen_size[1]
-    
-    def load_clothes_img(self, maps):
-        self.clothes_images = [
-                (pygame.image.load("imgs/pants1.png").convert_alpha(), 45),
-                (pygame.image.load("imgs/pants2.png").convert_alpha(), 10),
-                (pygame.image.load("imgs/boots1.png").convert_alpha(), 48),
-                (pygame.image.load("imgs/boots2.png").convert_alpha(), 10),
-                (pygame.image.load("imgs/tshirt1.png").convert_alpha(), 69),
-                (pygame.image.load("imgs/tshirt2.png").convert_alpha(), 10),
-                (pygame.image.load("imgs/chain.png").convert_alpha(), 400),
-                (pygame.image.load("imgs/sunglasses.png").convert_alpha(), 20),
-                (pygame.image.load("imgs/watch.png").convert_alpha(), 399),
-            ]
-
-        x = maps.level_map_rect.x + 610
-        y = maps.level_map_rect.y
-
-        for image in self.clothes_images:
-            self.clothes_image_rect.append(image[0].get_rect(topright = (x, y)))
-            if x >= maps.level_map_rect.x + 800:
-                x = maps.level_map_rect.x + 610
-                y += 120
-            else:
-                x += 190
-    
-    def draw_clothes(self, screen):
-        for index, img in enumerate(self.clothes_images):
-            screen.blit(img[0], self.clothes_image_rect[index])
-    
-    def drag_clothes(self, player):
-        if not self.list_of_events[0]:
-            for index, rect in enumerate(self.clothes_image_rect):
-                if player.check_for_collision_with_rect(rect):
-                    rect.center = (player.x_pos, player.y_pos)
-                    self.list_of_events[0] = True
-                    self.index_of_drag_rect = index
-                    break
-        else:
-            self.clothes_image_rect[self.index_of_drag_rect].center = (player.x_pos, player.y_pos)
-    
-    def draw_budget(self, budget, settings, x, y):
-        settings.draw_text("Budget:", x + 200, y + 100, (0, 0, 0))
-        if budget > 0:
-            color = (31, 163, 70)
-        else:
-            color = (183, 32, 11)
-        settings.draw_text(str(budget) + "$", x + 200, y + 150, color)
-    
-    def add_up_clothes_price_in_buy_zone(self, buy_zone_rect):
-        budget = 40
-        for index, rect in enumerate(self.clothes_image_rect):
-            if buy_zone_rect.colliderect(rect):
-                budget -= self.clothes_images[index][1]
-        
-        return budget
-    
-    def check_if_dressed(self, buy_zone_rect):
-        cloth_indexes = []
-        for index, rect in enumerate(self.clothes_image_rect):
-            if buy_zone_rect.colliderect(rect):
-                cloth_indexes.append(index)
-        
-        pants_ids = [0, 1]
-        boots_ids = [2, 3]
-        tshirt_ids = [4, 5]
-
-        wears_pants = any(index in cloth_indexes for index in pants_ids)
-        wears_boots = any(index in cloth_indexes for index in boots_ids)
-        wears_tshirt = any(index in cloth_indexes for index in tshirt_ids)
-
-        if wears_pants and wears_boots and wears_tshirt:
-            return True
-
-        return False
 
     def draw_moving_sideways_rects(self, screen, speed = 3, color = (214, 85, 37)):
         for points in self.moving_points_rects:
@@ -515,5 +432,4 @@ class Level_events():
         self.moving_points_circle_radius.clear()
         self.moving_points_lines.clear()
         self.moving_points_rects.clear()
-        self.clothes_images.clear()
-        self.clothes_image_rect.clear()
+        self.clothes = None
