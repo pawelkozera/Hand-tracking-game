@@ -16,12 +16,9 @@ class Player():
         pygame.draw.circle(screen, self.color, (self.x_pos, self.y_pos), self.border)
     
     def draw_hand_not_detected(self, settings):
-        text_surface = settings.font.render("Hand not detected", False, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=(settings.screen_size[0]/2, settings.screen_size[1]/2))
-        settings.screen.blit(text_surface, text_rect)
-
-    def in_borders(self, maps, height):
-        return self.x_pos - self.border > maps.level_map_rect.left and self.y_pos - self.border > 0 and self.y_pos + self.border < height and self.x_pos + self.border < maps.level_map_rect.right
+        alert_rect = pygame.Rect(0, 0, 400, 50)
+        alert_rect.center = (settings.screen_size[0]/2, settings.screen_size[1]/2)
+        pygame.draw.rect(settings.screen, (189, 164, 109), alert_rect)
 
     def check_for_collision(self, maps, settings):
         collision_positions = {
@@ -31,19 +28,22 @@ class Player():
             'down': [self.x_pos, self.y_pos - self.border]
         }
 
-        for position in collision_positions.values():
-            color = settings.screen.get_at((position[0], position[1]))[:3]
-            
-            if color == maps.color_win:
-                return 1
-            elif color == maps.color_lose:
-                return 2
-            elif color == (0, 162, 232):
-                return 3
-            elif color == (255, 174, 201):
-                return 4
-            elif color == (239, 228, 176):
-                return 5
+        try:
+            for position in collision_positions.values():
+                color = settings.screen.get_at((position[0], position[1]))[:3]
+                
+                if color == maps.color_win:
+                    return 1
+                elif color == maps.color_lose:
+                    return 2
+                elif color == (0, 162, 232):
+                    return 3
+                elif color == (255, 174, 201):
+                    return 4
+                elif color == (239, 228, 176):
+                    return 5
+        except IndexError:
+            return -1
         
         return 0
     

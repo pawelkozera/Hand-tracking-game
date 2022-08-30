@@ -62,7 +62,7 @@ def main():
                 #pygame
                 if settings.game_state == "game":
                     pygame.mouse.set_visible(False)
-                    Mechanics.game_state_hand(player, maps, settings, results, streamer, chat, physics, level_events)
+                    Mechanics.game_state_running(player, maps, settings, streamer, chat, physics, level_events)
 
                 elif settings.game_state == "menu":
                     pygame.mouse.set_visible(True)
@@ -80,7 +80,8 @@ def main():
             settings.events = pygame.event.get()
             if settings.game_state == "game":
                 pygame.mouse.set_visible(False)
-                Mechanics.game_state_mouse(player, maps, settings, streamer, chat, physics, level_events)
+                player.get_mouse_position()
+                Mechanics.game_state_running(player, maps, settings, streamer, chat, physics, level_events)
 
             elif settings.game_state == "menu":
                 pygame.mouse.set_visible(True)

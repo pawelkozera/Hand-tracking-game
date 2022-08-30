@@ -39,14 +39,13 @@ class MediapipeHandler():
     def get_hand_position(self, results, width, height, player):
         if results.multi_hand_landmarks:
             for hand_landmarks in results.multi_hand_landmarks:
-                for index, landmark in enumerate(hand_landmarks.landmark):
-                    if index == 8 and player.controler_hand:
-                        player.x_pos = int(landmark.x * width * self.x_speed)
-                        player.y_pos = int(landmark.y * height * self.y_speed)
-                        if player.y_pos < 0:
-                            player.y_pos = 0 + player.border
-                        if player.y_pos > height:
-                            player.y_pos = height - player.border
+                landmark = hand_landmarks.landmark[8]
+                player.x_pos = int(landmark.x * width * self.x_speed)
+                player.y_pos = int(landmark.y * height * self.y_speed)
+                if player.y_pos < 0:
+                    player.y_pos = 0 + player.border
+                if player.y_pos > height:
+                    player.y_pos = height - player.border
     
     def draw_hand(self, results, screen):
         self.image.flags.writeable = True

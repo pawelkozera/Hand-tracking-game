@@ -4,8 +4,8 @@ from collections import deque
 
 class Chat():
     def __init__(self):
-        self.users = ["Max"]
-        self.texts = ["asd", "123", "345"]
+        self.users = [""]
+        self.texts = [""]
         self.used_texts = deque()
         self.used_users = deque()
         self.color_for_used_users = deque()
@@ -186,8 +186,13 @@ class Chat():
     
     def change_number_of_users_in_chat(self, new_number_of_users):
         self.users_in_chat = new_number_of_users
-        min = new_number_of_users - randint(1, int(new_number_of_users/8))
-        max = new_number_of_users + randint(1, int(new_number_of_users/8))
+        if new_number_of_users > 8:
+            min = new_number_of_users - randint(1, int(new_number_of_users/8))
+            max = new_number_of_users + randint(1, int(new_number_of_users/8))
+        elif new_number_of_users == 0:
+            min = max = 0
+        else:
+            min = max = 1
         self.users_division[0] = min
         self.users_division[1] = max
     

@@ -8,7 +8,7 @@ class Settings():
         self.game_state = "menu"
         self.screen_size = screen_size
         self.screen = screen
-        self.events = None
+        self.events = pygame.event.get()
         self.font = pygame.font.Font('fonts/NotoSerif-Regular.ttf', 30)
         self.font_chat = pygame.font.Font('fonts/NotoSerif-Regular.ttf', 14)
 
@@ -74,6 +74,7 @@ class Settings():
         selected_camera = False
         
         while True:
+            self.events = pygame.event.get()
             new_camera_index = self.check_pressed_camera_button(buttons_rects)
 
             if new_camera_index != -1:

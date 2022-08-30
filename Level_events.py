@@ -68,6 +68,9 @@ class Level_events():
                 "Hello new streamerrrr",
             ]
 
+            chat.load_chat_users_from_file()
+            chat.change_number_of_users_in_chat(147295)
+
             self.events_enabled = True
 
     def level_1(self, physics, maps, settings, streamer, chat):
@@ -76,10 +79,10 @@ class Level_events():
                     "No matter what your skills are, you always start with 0 viewers in the beginning.",
                     ]
             
-            chat.texts = []
-            chat.users = []
-            chat.used_users = []
-            chat.used_texts = []
+            chat.texts.clear()
+            chat.users.clear()
+            chat.used_users.clear()
+            chat.used_texts.clear()
 
             self.events_enabled = True
             self.y_position_for_animation = -400
@@ -87,10 +90,10 @@ class Level_events():
             physics.create_static_wall(settings, maps.level_map_rect.x + 200)
             physics.create_static_wall(settings, maps.level_map_rect.topright[0] - 200)
             self.create_static_balls(40, maps, physics)
-            self.create_falling_balls(120, physics, maps)
-        
-            chat.users_in_chat = 1
-            chat.users_division = (1, 1)
+            self.create_falling_balls(200, physics, maps)
+
+            chat.change_number_of_users_in_chat(0)
+           
         physics.remove_unused_objects(settings.screen_size[1])
         physics.draw_ball(settings, maps.color_lose)
         physics.draw_static_ball(settings, maps.color_lose, self.y_position_for_animation)
@@ -122,13 +125,12 @@ class Level_events():
                 "may i be racist in the chat?",
                 "omg"
                 ]
-            chat.users = ["dickster69"]
+            chat.load_chat_users_from_file(1)
+            chat.change_number_of_users_in_chat(1)
 
             self.events_enabled = True
             self.y_position_for_animation = -400
 
-            chat.users_in_chat = 1
-            chat.users_division = (1, 1)
             physics.create_static_wall(settings, maps.level_map_rect.x + 200)
             physics.create_static_wall(settings, maps.level_map_rect.topright[0] - 200)
             self.create_static_balls(40, maps, physics, radious = 10)
@@ -171,8 +173,8 @@ class Level_events():
 
             self.events_enabled = True
         
-        chat.users_in_chat = 1
-        chat.users_division = (1, 1)
+        chat.load_chat_users_from_file(1)
+        chat.change_number_of_users_in_chat(1)
         chat.miliseconds_for_new_text = 4000
         if streamer.index_of_text < len(streamer.texts) - 1:
             maps.map_speed = 0
@@ -181,21 +183,22 @@ class Level_events():
 
     def level_4(self, streamer, chat, maps, settings):
         if not self.events_enabled:
-            chat.users_in_chat = 1
+            users_in_chat = 1
             curse_string = "\"You are "
             if len(self.curse_words) == 3:
                 curse_string += " ".join(self.curse_words)
                 curse_string += "\""
                 if self.curse_words[0] in ["fucking", "garbage"]:
-                    chat.users_in_chat += 23
+                    users_in_chat += 23
                 if self.curse_words[1] in ["ugly", "humpbacked"]:
-                    chat.users_in_chat += 11
+                    users_in_chat += 11
                 if self.curse_words[2] in ["bastard", "fucker"]:
-                    chat.users_in_chat += 17
+                    users_in_chat += 17
                 if self.curse_words[1] == "handsome":
-                    chat.users_in_chat = 1
+                    users_in_chat = 1
 
-            chat.users_division = (chat.users_in_chat, chat.users_in_chat + 5)
+            chat.load_chat_users_from_file(users_in_chat)
+            chat.change_number_of_users_in_chat(users_in_chat)
 
             if chat.users_in_chat >= 40:
                 how_well_player_did = "Pretty good for the first time. You should consider taking Tourette's subclass."
@@ -230,7 +233,6 @@ class Level_events():
                 "may i be racist in the chat?",
                 "omg"
                 ]
-            chat.users = ["dickster69", "ralph", "max", "tobby", "robert", "master21", "cornelius"]
 
             y = self.calculate_y_position_on_map(4054, maps, settings)
             x = maps.level_map_rect.x + 316
@@ -272,7 +274,22 @@ class Level_events():
     def level_5(self, streamer, chat, maps, settings, player):
         if not self.events_enabled:
             streamer.texts = [
-                ""
+                "I'm sure you will get more viewers by living beyond your means.",
+                "Don't worry about paying your bills, make sure online strangers admire you.",
+            ]
+
+            chat.texts = [
+                "let's gooooooo",
+                "lol", "loooooool", "LoL", "lul",
+                "Yeeeeeeees",
+                "noo",
+                "How did it go so wrong",
+                "That's a hard lvl!",
+                "xDD", "xD", "xd", "XDDDD",
+                "BUUUUUUY", "buy the sunglasses", "the read shirt!!", "reeeed tshirt",
+                "buyyy", "buy all", "jeans look good", "i love the chain",
+                "$$$$$$", "$$$", "$$$$$$$$$$$$$", "buy watch", "waaaaaaaaatch",
+                "i watch you buying watch",
             ]
             
             self.load_clothes_img(maps)
@@ -294,20 +311,23 @@ class Level_events():
             self.budget = budget
             if budget <= -100 and budget > -140:
                 chat.change_number_of_users_in_chat(60)
-            elif budget <= -140 and budget > -540:
+                chat.load_chat_users_from_file(60)
+            elif budget <= -140 and budget > -600:
                 chat.change_number_of_users_in_chat(110)
+                chat.load_chat_users_from_file(60)
             elif budget <= -600:
                 chat.change_number_of_users_in_chat(180)
+                chat.load_chat_users_from_file(60)
             else:
                 chat.change_number_of_users_in_chat(30)
+                chat.load_chat_users_from_file(15)
 
         self.ending_check_points[1] = True if budget > 0 else False
-        
-        if self.check_if_dressed(buy_zone_rect):
-            pygame.draw.circle(settings.screen, maps.color_win, (x + 350, y + 30), 25)
 
         self.draw_clothes(settings.screen)
         self.draw_budget(budget, settings, x, y)
+        if self.check_if_dressed(buy_zone_rect):
+            pygame.draw.circle(settings.screen, maps.color_win, (x + 350, y + 30), 25)
 
     def collision_handler(self, collision, maps, player):
         if maps.level == 3:
