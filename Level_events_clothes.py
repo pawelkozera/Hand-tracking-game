@@ -1,6 +1,6 @@
 import pygame
 
-class Level_events_clothes():
+class Clothes():
     def __init__(self):
         self.budget = 0
         self.clothes_images = []

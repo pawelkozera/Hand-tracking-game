@@ -217,7 +217,7 @@ class Settings():
             text = "Camera " + str(index)
             self.draw_text(text, rect[index].centerx, rect[index].centery, color)
     
-    def draw_text(self, text, x, y, color):
+    def draw_text(self, text, x, y, color = (255, 255, 255)):
         text_surface = self.font.render(text, True, color)
         text_rect = text_surface.get_rect(center=(int(x), int(y)))
         self.screen.blit(text_surface, text_rect)
@@ -227,11 +227,9 @@ class Settings():
     def check_pressed_camera_button(self, rects):
         choosen_camera_index = -1
         mouse_pos = pygame.mouse.get_pos()
-        index = 0
 
-        for rect in rects:
+        for index, rect in enumerate(rects):
             if pygame.Rect.collidepoint(rect, mouse_pos) and pygame.mouse.get_pressed()[0]:
                 choosen_camera_index = index
-            index += 1
         
         return choosen_camera_index

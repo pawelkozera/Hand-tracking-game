@@ -67,7 +67,7 @@ class Chat():
             text_width, _ = settings.font.size(string)
             
             if text_width >= self.chat_rect.width - 8:
-                new_strings = self.split_text(string, settings)
+                new_strings = self.split_text(string, settings.font_chat, self.chat_rect.width - 14)
                 height_padding = self.draw_text_with_split(settings, new_strings, height_padding, font_height, x, y, index)
             else:
                 height_padding = self.draw_text_without_split(settings, string, height_padding, font_height, x, y, index)
@@ -140,7 +140,7 @@ class Chat():
 
         return (r, g, b)
 
-    def split_text(self, string_to_split, settings):
+    def split_text(self, string_to_split, font, max_width):
         split_text = string_to_split.split(" ")
         new_strings = []
         text = split_text[0]
@@ -148,9 +148,9 @@ class Chat():
 
         for string in split_text[1:]:
             text = text + " " + string
-            text_width, _ = settings.font_chat.size(text)
+            text_width, _ = font.size(text)
 
-            if text_width >= self.chat_rect.width - 14:
+            if text_width >= max_width:
                 new_strings.append(text_prev)
                 text = string
                 text_prev = text

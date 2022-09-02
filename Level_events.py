@@ -3,10 +3,12 @@ import random
 import math
 
 import Level_events_clothes
+import Level_events_keyboard
 
 class Level_events():
     def __init__(self):
         self.clothes = None
+        self.keyboard = None
 
         self.events_enabled = False
         self.ending_check_points = [False, False]
@@ -293,8 +295,9 @@ class Level_events():
                 "i watch you buying watch",
             ]
 
-            self.clothes = Level_events_clothes.Level_events_clothes()
-            self.clothes.load_clothes_img(maps)
+            if not self.clothes:
+                self.clothes = Level_events_clothes.Clothes()
+                self.clothes.load_clothes_img(maps)
             self.list_of_events = [False]
 
             self.events_enabled = True
@@ -318,7 +321,25 @@ class Level_events():
             pygame.draw.circle(settings.screen, maps.color_win, (x + 350, y + 30), 25)
 
     def level_6(self, streamer, chat, maps, settings, player):
-        pass
+        if not self.events_enabled:
+            if not self.keyboard:
+                self.keyboard = Level_events_keyboard.Keyboard(settings.screen_size, maps.level_map_rect.x)
+
+            self.events_enabled = True
+        
+        self.keyboard.draw_keyboard(settings)
+        self.keyboard.collision_with_letter(settings, player.x_pos, player.y_pos)
+        if maps.map_speed == 0:
+            self.keyboard.draw_current_question(settings, maps, chat)
+            self.keyboard.draw_answer_space(settings, maps)
+            self.keyboard.check_if_letter_pressed_using_keyboard(settings)
+            if self.keyboard.check_if_answer_is_complete():
+                if not self.keyboard.check_if_its_last_question():
+                    self.keyboard.next_question()
+                else:
+                    x_center_of_circle = maps.level_map_rect.x + 400
+                    y_center_of_circle = self.calculate_y_position_on_map(370, maps, settings)
+                    pygame.draw.circle(settings.screen, maps.color_win, (x_center_of_circle, y_center_of_circle), 20)
 
     def collision_handler(self, collision, maps, player):
         if maps.level == 3:
@@ -432,4 +453,7 @@ class Level_events():
         self.moving_points_circle_radius.clear()
         self.moving_points_lines.clear()
         self.moving_points_rects.clear()
+    
+    def delete_classes_after_win(self):
         self.clothes = None
+        self.keyboard = None

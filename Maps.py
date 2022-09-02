@@ -1,12 +1,11 @@
 import os
-from select import select
 import pygame
 
 class Maps():
     def __init__(self):
         self.color_lose = (214, 85, 37) #(214, 85, 37)
         self.color_win = (34, 177, 76)
-        self.level = 5
+        self.level = 6
         self.map_speed = 3
         self.maps = []
 

@@ -23,6 +23,7 @@ def game_state_running(player, maps, settings, streamer, chat, physics, level_ev
     if collision == 1:
         maps.next_map_after_win(settings.screen_size)
         streamer.reset_animation_parameters()
+        level_events.delete_classes_after_win()
         reset_game(settings, physics, level_events)
     elif collision == 2:
         maps.same_map(settings.screen_size)
