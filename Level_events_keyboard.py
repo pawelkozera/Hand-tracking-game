@@ -24,6 +24,9 @@ class Keyboard():
             )
         self.correct_answers = ("DOG", "WIMP", "DIGGER", "INTERACTIVE", "PROMOTE", "CONSISTENT", "COLLABORATION")
         self.user_chosen_letters = "DO"
+
+        self.next_question_button_img = pygame.image.load("imgs/next.png").convert()
+        self.next_question_button_rect = self.next_question_button_img.get_rect(center = (map_x_beginning + 400, self.letters_rects[0].y - 100))
     
     def __add_letters_rects(self, screen_size, map_x_beginning):
         self.letters_rects.clear()
@@ -61,14 +64,14 @@ class Keyboard():
             if pygame.Rect.collidepoint(rect, (x_pos, y_pos)):
                 if index not in self.colors_for_pressed_letters.keys():
                     self.letter_hovered(index, settings)
-                if self.check_if_letter_pressed_using_mouse(settings):
+                if self.check_if_pressed_using_mouse(settings):
                     self.add_letter_to_user_chosen_letters(index)
     
     def letter_hovered(self, index, settings):
         letter = self.letters[index]
         self.draw_letter(settings, index, letter, letter_rect_color=(173, 142, 78))
     
-    def check_if_letter_pressed_using_mouse(self, settings):
+    def check_if_pressed_using_mouse(self, settings):
         for event in settings.events:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 return True
@@ -160,3 +163,16 @@ class Keyboard():
         for letter in letters:
             index = self.letters.index(letter)
             self.colors_for_pressed_letters[index] = (72, 187, 98)
+    
+    def draw_next_question_button(self, settings):
+        settings.screen.blit(self.next_question_button_img, self.next_question_button_rect)
+    
+    def check_if_next_button_pressed(self, settings, x_pos, y_pos):
+        if pygame.Rect.collidepoint(self.next_question_button_rect, (x_pos, y_pos)):
+            for event in settings.events:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    return True
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        return True
+        return False

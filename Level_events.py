@@ -323,7 +323,8 @@ class Level_events():
     def level_6(self, streamer, chat, maps, settings, player):
         if not self.events_enabled:
             if not self.keyboard:
-                self.keyboard = Level_events_keyboard.Keyboard(settings.screen_size, maps.level_map_rect.x)
+                map_x_beginning = maps.level_map_rect.x
+                self.keyboard = Level_events_keyboard.Keyboard(settings.screen_size, map_x_beginning)
 
             self.events_enabled = True
         
@@ -335,7 +336,9 @@ class Level_events():
             self.keyboard.check_if_letter_pressed_using_keyboard(settings)
             if self.keyboard.check_if_answer_is_complete():
                 if not self.keyboard.check_if_its_last_question():
-                    self.keyboard.next_question()
+                    self.keyboard.draw_next_question_button(settings)
+                    if self.keyboard.check_if_next_button_pressed(settings, player.x_pos, player.y_pos):
+                        self.keyboard.next_question()
                 else:
                     x_center_of_circle = maps.level_map_rect.x + 400
                     y_center_of_circle = self.calculate_y_position_on_map(370, maps, settings)
