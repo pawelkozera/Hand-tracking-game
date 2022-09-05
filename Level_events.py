@@ -1,20 +1,26 @@
+from cgitb import reset
 import pygame
 import random
 import math
 
 import Level_events_clothes
 import Level_events_keyboard
+import Level_events_mukbang
 
 class Level_events():
     def __init__(self):
         self.clothes = None
         self.keyboard = None
+        self.mukbang = None
 
         self.events_enabled = False
-        self.ending_check_points = [False, False]
+        self.ending_check_points = [False, False, False]
+
         self.y_position_for_animation = 0
         self.speed_of_increasing_y = 5
         self.curse_words = []
+        self.is_dragged = False
+        self.index_of_dragged_rect = 0
 
         self.list_of_events = []
         self.lmp_pressed = False
@@ -37,6 +43,8 @@ class Level_events():
             self.level_5(streamer, chat, maps, settings, player)
         elif maps.level == 6:
             self.level_6(streamer, chat, maps, settings, player)
+        elif maps.level == 7:
+            self.level_7(streamer, chat, maps, settings, player)
     
     def level_0(self, streamer, chat):
         if not self.events_enabled:
@@ -296,17 +304,14 @@ class Level_events():
             ]
 
             if not self.clothes:
-                self.clothes = Level_events_clothes.Clothes()
-                self.clothes.load_clothes_img(maps)
+                self.clothes = Level_events_clothes.Clothes(maps)
+            self.clothes.reset_clothes_position(maps)
             self.list_of_events = [False]
 
             self.events_enabled = True
         
-        mouse_buttons = pygame.mouse.get_pressed()
-        if mouse_buttons[0]:
-            self.clothes.drag_clothes(player)
-        else:
-            self.clothes.is_dragged = False
+        self.clothes.drag_clothes(player, self)
+        
         x = maps.level_map_rect.x
         y = maps.level_map_rect.y
         buy_zone_rect = pygame.draw.rect(settings.screen, (0, 0, 0), (x, y, 400, 800), 1)
@@ -343,6 +348,38 @@ class Level_events():
                     x_center_of_circle = maps.level_map_rect.x + 400
                     y_center_of_circle = self.calculate_y_position_on_map(370, maps, settings)
                     pygame.draw.circle(settings.screen, maps.color_win, (x_center_of_circle, y_center_of_circle), 20)
+    
+    def level_7(self, streamer, chat, maps, settings, player):
+        if not self.events_enabled:
+            if not self.mukbang:
+                map_x_beginning = maps.level_map_rect.x
+                self.mukbang = Level_events_mukbang.Mukbang(settings.screen_size, map_x_beginning) 
+            self.mukbang.reset_food_position()
+            
+            self.events_enabled = True
+        
+        self.mukbang.draw_table(settings.screen)
+        self.mukbang.draw_dontation_box(settings.screen)
+        self.mukbang.draw_face(settings.screen)
+        self.mukbang.draw_food(settings.screen)
+        self.mukbang.draw_calories(settings)
+        self.mukbang.draw_donated_boxes(settings)
+        self.mukbang.drag_food(player, self)
+        
+        if not self.is_dragged:
+            self.mukbang.food_collision(self.index_of_dragged_rect)
+        self.mukbang.eating_face_animation()
+        
+        if self.mukbang.calories_goal_is_completed():
+            self.ending_check_points[2] = False
+            self.mukbang.draw_passage_to_next_level(maps.color_win, settings.screen)
+        elif self.mukbang.donated_boxes_goal_is_completed():
+            self.ending_check_points[2] = True
+            self.mukbang.draw_passage_to_next_level(maps.color_win, settings.screen)
+        else:
+            if self.mukbang.check_if_every_food_is_eaten_or_donated():
+                self.mukbang.reset_food_position()
+                self.mukbang.clear_removed_rects()
 
     def collision_handler(self, collision, maps, player):
         if maps.level == 3:
@@ -358,6 +395,22 @@ class Level_events():
         y = y + screen_height
 
         return y + settings.screen_size[1]
+    
+    def drag_rects(self, player, rects):
+        mouse_buttons = pygame.mouse.get_pressed()
+        keys = pygame.key.get_pressed()
+        if mouse_buttons[0] or keys[pygame.K_SPACE]:
+            if not self.is_dragged:
+                for index, rect in enumerate(rects):
+                    if player.check_for_collision_with_rect(rect):
+                        rect.center = (player.x_pos, player.y_pos)
+                        self.is_dragged = True
+                        self.index_of_dragged_rect = index
+                        break
+            else:
+                rects[self.index_of_dragged_rect].center = (player.x_pos, player.y_pos)
+        else:
+            self.is_dragged = False
 
     def draw_moving_sideways_rects(self, screen, speed = 3, color = (214, 85, 37)):
         for points in self.moving_points_rects:
@@ -452,6 +505,7 @@ class Level_events():
     
     def reset(self):
         self.events_enabled = False
+        self.reset_rects = True
         self.list_of_events.clear()
         self.moving_points_circle_radius.clear()
         self.moving_points_lines.clear()
@@ -460,3 +514,4 @@ class Level_events():
     def delete_classes_after_win(self):
         self.clothes = None
         self.keyboard = None
+        self.mukbang = None

@@ -1,26 +1,28 @@
 import pygame
 
 class Clothes():
-    def __init__(self):
+    def __init__(self, maps):
         self.budget = 0
         self.clothes_images = []
         self.clothes_image_rect = []
-        self.index_of_drag_rect = 0
-        self.is_dragged = False
+
+        self.__load_clothes_img()
+        self.__add_clothes_rects(maps)
     
-    def load_clothes_img(self, maps):
+    def __load_clothes_img(self):
         self.clothes_images = [
-                (pygame.image.load("imgs/pants1.png").convert_alpha(), 45),
-                (pygame.image.load("imgs/pants2.png").convert_alpha(), 10),
-                (pygame.image.load("imgs/boots1.png").convert_alpha(), 48),
-                (pygame.image.load("imgs/boots2.png").convert_alpha(), 10),
-                (pygame.image.load("imgs/tshirt1.png").convert_alpha(), 69),
-                (pygame.image.load("imgs/tshirt2.png").convert_alpha(), 10),
-                (pygame.image.load("imgs/chain.png").convert_alpha(), 400),
-                (pygame.image.load("imgs/sunglasses.png").convert_alpha(), 20),
-                (pygame.image.load("imgs/watch.png").convert_alpha(), 399),
+                (pygame.image.load("imgs/clothes/pants1.png").convert_alpha(), 45),
+                (pygame.image.load("imgs/clothes/pants2.png").convert_alpha(), 10),
+                (pygame.image.load("imgs/clothes/boots1.png").convert_alpha(), 48),
+                (pygame.image.load("imgs/clothes/boots2.png").convert_alpha(), 10),
+                (pygame.image.load("imgs/clothes/tshirt1.png").convert_alpha(), 69),
+                (pygame.image.load("imgs/clothes/tshirt2.png").convert_alpha(), 10),
+                (pygame.image.load("imgs/clothes/chain.png").convert_alpha(), 400),
+                (pygame.image.load("imgs/clothes/sunglasses.png").convert_alpha(), 20),
+                (pygame.image.load("imgs/clothes/watch.png").convert_alpha(), 399),
             ]
 
+    def __add_clothes_rects(self, maps):
         x = maps.level_map_rect.x + 610
         y = maps.level_map_rect.y
 
@@ -32,20 +34,24 @@ class Clothes():
             else:
                 x += 190
     
+    def reset_clothes_position(self, maps):
+        x = maps.level_map_rect.x + 610
+        y = maps.level_map_rect.y
+
+        for clothes_rect in self.clothes_image_rect:
+            clothes_rect.topright = (x, y)
+            if x >= maps.level_map_rect.x + 800:
+                x = maps.level_map_rect.x + 610
+                y += 120
+            else:
+                x += 190
+    
     def draw_clothes(self, screen):
         for index, img in enumerate(self.clothes_images):
             screen.blit(img[0], self.clothes_image_rect[index])
     
-    def drag_clothes(self, player):
-        if not self.is_dragged:
-            for index, rect in enumerate(self.clothes_image_rect):
-                if player.check_for_collision_with_rect(rect):
-                    rect.center = (player.x_pos, player.y_pos)
-                    self.is_dragged = True
-                    self.index_of_drag_rect = index
-                    break
-        else:
-            self.clothes_image_rect[self.index_of_drag_rect].center = (player.x_pos, player.y_pos)
+    def drag_clothes(self, player, level_events):
+        level_events.drag_rects(player, self.clothes_image_rect)
     
     def draw_budget(self, budget, settings, x, y):
         settings.draw_text("Budget:", x + 200, y + 100, (0, 0, 0))
