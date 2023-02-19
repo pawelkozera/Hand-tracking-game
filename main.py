@@ -33,7 +33,7 @@ def main():
     player = Player.Player(screen_size)
 
     mpHandler = MediapipeHandler.MediapipeHandler()
-    #mpHandler.find_camera_indexes()
+    mpHandler.find_camera_indexes()
 
     level_events = Level_events.Level_events()
 

@@ -6,12 +6,14 @@ import math
 import Level_events_clothes
 import Level_events_keyboard
 import Level_events_mukbang
+import Level_events_stamp
 
 class Level_events():
     def __init__(self):
         self.clothes = None
         self.keyboard = None
         self.mukbang = None
+        self.stamp = None
 
         self.events_enabled = False
         self.ending_check_points = [False, False, False]
@@ -45,51 +47,18 @@ class Level_events():
             self.level_6(streamer, chat, maps, settings, player)
         elif maps.level == 7:
             self.level_7(streamer, chat, maps, settings, player)
+        elif maps.level == 8:
+            self.level_8(streamer, chat, maps, settings, player)
     
     def level_0(self, streamer, chat):
         if not self.events_enabled:
-            streamer.texts = [
-                    "Hello, my name is Jerry The Instructor.", 
-                    "I'm gonna teach you how to be successful streamer.",
-                    "Listen to me and in the meantime just solve the puzzles I created.",
-                    "I gave all 20% of my creativity to create them."
-                    ]
-
-            chat.texts = [
-                "Ehh another InFlUeNcEr",
-                "message deleted by a moderator",
-                "message deleted by a moderator",
-                "Hello!!!!",
-                "Hi!",
-                "Hi!!!",
-                "Hi!!",
-                "Hi jerry",
-                "Hi jerry",
-                "Hi Jerry",
-                "Hi jerry!!",
-                "Hi jerry!",
-                "<3 <3 <3 <3 <3 <3 <3 <3 <3",
-                "My wife cheated on me",
-                "lets' goooooooooo chat",
-                "Lorem ipsum!",
-                "You can do it newbie!",
-                "Hi newbie",
-                "Hi newbie!",
-                "Hi noobie!!",
-                "Hello new streamerrrr",
-            ]
-
             chat.load_chat_users_from_file()
             chat.change_number_of_users_in_chat(147295)
 
             self.events_enabled = True
 
     def level_1(self, physics, maps, settings, streamer, chat):
-        if not self.events_enabled:
-            streamer.texts = [
-                    "No matter what your skills are, you always start with 0 viewers in the beginning.",
-                    ]
-            
+        if not self.events_enabled:    
             chat.texts.clear()
             chat.users.clear()
             chat.used_users.clear()
@@ -112,30 +81,6 @@ class Level_events():
     
     def level_2(self, physics, maps, settings, streamer, chat):
         if not self.events_enabled:
-            streamer.texts = [
-                    "Sometimes it will take a while, but eventually a random guy will show up.",
-                    "I think I spawned too many balls.",
-                    "Welp you gonna figure this out."
-                    ]
-            
-            chat.texts = ["What's uppppppppppp",
-                "My boyfriend gay can't think straight",
-                "i have 99 problems but a beach ain't one",
-                "Where there's a stream, there's watchers...",
-                "I think i have hemorrhoids",
-                "let's gooooooo",
-                "lol",
-                "Yeeeeeeees",
-                "noo",
-                "How did it go so wrong",
-                "That's a hard lvl!",
-                "xDD", "xD", "xd", "XDDDD",
-                "where do you live?",
-                "what's your age?",
-                "how much money do you make?",
-                "may i be racist in the chat?",
-                "omg"
-                ]
             chat.load_chat_users_from_file(1)
             chat.change_number_of_users_in_chat(1)
 
@@ -155,33 +100,6 @@ class Level_events():
 
     def level_3(self, streamer, chat, maps):
         if not self.events_enabled:
-            streamer.texts = [
-                    "The best way to gain viewers is to have unique personality.",
-                    "Okay, pretend to have Tourette's syndrome.",
-                    "People with Tourette's subclass have n-word pass even as white.",
-                    "Pick the best curse combo."
-                    ]
-            
-            chat.texts = ["What's uppppppppppp",
-                "My boyfriend gay can't think straight",
-                "i have 99 problems but a beach ain't one",
-                "Where there's a stream, there's watchers...",
-                "I think i have hemorrhoids",
-                "let's gooooooo",
-                "lol",
-                "Yeeeeeeees",
-                "noo",
-                "How did it go so wrong",
-                "That's a hard lvl!",
-                "xDD", "xD", "xd", "XDDDD",
-                "where do you live?",
-                "what's your age?",
-                "how much money do you make?",
-                "may i be racist in the chat?",
-                "omg"
-                ]
-            chat.users = ["dickster69"]
-
             self.events_enabled = True
         
         chat.load_chat_users_from_file(1)
@@ -199,11 +117,11 @@ class Level_events():
             if len(self.curse_words) == 3:
                 curse_string += " ".join(self.curse_words)
                 curse_string += "\""
-                if self.curse_words[0] in ["fucking", "garbage"]:
+                if self.curse_words[0] in ["awful", "garbage"]:
                     users_in_chat += 23
                 if self.curse_words[1] in ["ugly", "humpbacked"]:
                     users_in_chat += 11
-                if self.curse_words[2] in ["bastard", "fucker"]:
+                if self.curse_words[2] in ["bastard", "idiot"]:
                     users_in_chat += 17
                 if self.curse_words[1] == "handsome":
                     users_in_chat = 1
@@ -218,32 +136,6 @@ class Level_events():
             else:
                 how_well_player_did = "Okay, maybe that's not for you."
                 self.ending_check_points[0] = True
-
-            streamer.texts = [
-                    curse_string,
-                    how_well_player_did,
-                    "About 68% of influencers lie to their viewers.",
-                    "Source? I made it up."
-                    ]
-            
-            chat.texts = ["What's uppppppppppp",
-                "My boyfriend gay can't think straight",
-                "i have 99 problems but a beach ain't one",
-                "Where there's a stream, there's watchers...",
-                "I think i have hemorrhoids",
-                "let's gooooooo",
-                "lol",
-                "Yeeeeeeees",
-                "noo",
-                "How did it go so wrong",
-                "That's a hard lvl!",
-                "xDD", "xD", "xd", "XDDDD",
-                "where do you live?",
-                "what's your age?",
-                "how much money do you make?",
-                "may i be racist in the chat?",
-                "omg"
-                ]
 
             y = self.calculate_y_position_on_map(4054, maps, settings)
             x = maps.level_map_rect.x + 316
@@ -284,25 +176,6 @@ class Level_events():
     
     def level_5(self, streamer, chat, maps, settings, player):
         if not self.events_enabled:
-            streamer.texts = [
-                "I'm sure you will get more viewers by living beyond your means.",
-                "Don't worry about paying your bills, make sure online strangers admire you.",
-            ]
-
-            chat.texts = [
-                "let's gooooooo",
-                "lol", "loooooool", "LoL", "lul",
-                "Yeeeeeeees",
-                "noo",
-                "How did it go so wrong",
-                "That's a hard lvl!",
-                "xDD", "xD", "xd", "XDDDD",
-                "BUUUUUUY", "buy the sunglasses", "the read shirt!!", "reeeed tshirt",
-                "buyyy", "buy all", "jeans look good", "i love the chain",
-                "$$$$$$", "$$$", "$$$$$$$$$$$$$", "buy watch", "waaaaaaaaatch",
-                "i watch you buying watch",
-            ]
-
             if not self.clothes:
                 self.clothes = Level_events_clothes.Clothes(maps)
             self.clothes.reset_clothes_position(maps)
@@ -380,6 +253,27 @@ class Level_events():
             if self.mukbang.check_if_every_food_is_eaten_or_donated():
                 self.mukbang.reset_food_position()
                 self.mukbang.clear_removed_rects()
+    
+    def level_8(self, streamer, chat, maps, settings, player):
+        if not self.events_enabled:
+            chat.load_chat_users_from_file(3)
+
+            if not self.stamp:
+                map_x_beginning = maps.level_map_rect.x
+                self.stamp = Level_events_stamp.Stamp(map_x_beginning, settings.screen_size[1])
+            
+            self.events_enabled = True
+        
+        self.stamp.draw_signs_for_stamps(settings)
+        self.stamp.draw_contracts(settings.screen)
+        self.stamp.draw_stamps(settings.screen)
+        self.stamp.draw_stamps_on_contract(self.index_of_dragged_rect)
+
+        if not self.stamp.player_collision_with_stample(player):
+            self.stamp.drag_contract(player, self)
+        self.stamp.contract_collision_with_stamples(player, settings.events, self.index_of_dragged_rect)
+        if self.stamp.check_if_player_stamped_all_contracts():
+            self.stamp.draw_passage_to_next_level(maps.color_win, settings.screen)
 
     def collision_handler(self, collision, maps, player):
         if maps.level == 3:
@@ -396,7 +290,7 @@ class Level_events():
 
         return y + settings.screen_size[1]
     
-    def drag_rects(self, player, rects):
+    def drag_rects(self, player, rects, position_of_get_rect = None):
         mouse_buttons = pygame.mouse.get_pressed()
         keys = pygame.key.get_pressed()
         if mouse_buttons[0] or keys[pygame.K_SPACE]:
@@ -408,7 +302,10 @@ class Level_events():
                         self.index_of_dragged_rect = index
                         break
             else:
-                rects[self.index_of_dragged_rect].center = (player.x_pos, player.y_pos)
+                if not position_of_get_rect:
+                    rects[self.index_of_dragged_rect].center = (player.x_pos, player.y_pos)
+                else:
+                    rects[self.index_of_dragged_rect].midbottom = (player.x_pos, player.y_pos)
         else:
             self.is_dragged = False
 
@@ -515,3 +412,4 @@ class Level_events():
         self.clothes = None
         self.keyboard = None
         self.mukbang = None
+        self.stamp = None
