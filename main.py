@@ -1,5 +1,9 @@
 import pygame
 
+pygame.init()
+pygame.mixer.init()
+pygame.mixer.set_num_channels(8)
+
 import Maps
 import Menu
 import Player

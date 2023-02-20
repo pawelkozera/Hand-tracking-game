@@ -1,5 +1,4 @@
 import pygame
-import random
 
 class Streamer():
     def __init__(self, name):
@@ -13,11 +12,13 @@ class Streamer():
         self.image_rect = self.images[0].get_rect(midtop = (0, 50))
         self.tip_of_bubble_triangle = (0, 0)
 
-        self.texts = ["Hey guys!"]
+        self.texts = [""]
         self.how_many_times_mouth_moved = 0
         self.index_of_text = 0
         self.time_since_text = 0
         self.time_since_animation = 0
+
+        self.sound_talk = pygame.mixer.Sound("music/streamer_voice.wav")
 
     def render_streamer(self, screen):
         x, y = self.tip_of_bubble_triangle
@@ -116,6 +117,9 @@ class Streamer():
         index_in_range_of_texts = self.index_of_text < len(self.texts) - 1
 
         if time_difference_animation >= 500 and self.how_many_times_mouth_moved <= 11:
+            if not pygame.mixer.Channel(5).get_busy():
+                pygame.mixer.Channel(5).play(self.sound_talk)
+
             if self.current_streamer_image_index == 0:
                 self.current_streamer_image_index = 1
             else:
@@ -126,6 +130,9 @@ class Streamer():
         
         if self.how_many_times_mouth_moved > 11 and self.current_streamer_image_index == 0:
             self.current_streamer_image_index = 1
+        
+        if self.how_many_times_mouth_moved > 11:
+            pygame.mixer.Sound.stop(self.sound_talk)
         
         if time_difference_text >= 6000:
             if index_in_range_of_texts:

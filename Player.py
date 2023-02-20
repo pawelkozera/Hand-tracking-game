@@ -7,6 +7,8 @@ class Player():
         self.controler_hand = False
         self.x_pos = int(screen_size[0]/2)
         self.y_pos = int(screen_size[1] - 100)
+
+        self.wall_pop_sound = pygame.mixer.Sound("music/wall_pop.wav")
     
     def get_mouse_position(self):
         if not self.controler_hand:
@@ -35,6 +37,7 @@ class Player():
                 if color == maps.color_win:
                     return 1
                 elif color == maps.color_lose:
+                    pygame.mixer.Sound.play(self.wall_pop_sound)
                     return 2
                 elif color == (0, 162, 232):
                     return 3
