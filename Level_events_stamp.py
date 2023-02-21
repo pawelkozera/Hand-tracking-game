@@ -21,6 +21,8 @@ class Stamp():
         self.__add_contract_rects(map_x_beginning, screen_height)
 
         self.user_choice_contracts = [None] * len(self.contract_rects) # True = scam, False = approved
+
+        self.sound_stamp = pygame.mixer.Sound("music/stamp.wav")
     
     def __add_contract_rects(self, map_x_beginning, screen_height):
         x = map_x_beginning + 20
@@ -102,8 +104,9 @@ class Stamp():
     
     def stample_left_clicked(self, player, events):
         LEFT_BUTTON = 1
+        keys = pygame.key.get_pressed()
         for event in events:
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == LEFT_BUTTON:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == LEFT_BUTTON or keys[pygame.K_SPACE]:
                 collision_left_stamp_with_player = pygame.Rect.collidepoint(self.stamp_left_rect, (player.x_pos, player.y_pos))
                 if collision_left_stamp_with_player:
                     return True
@@ -111,8 +114,9 @@ class Stamp():
     
     def stample_right_clicked(self, player, events):
         LEFT_BUTTON = 1
+        keys = pygame.key.get_pressed()
         for event in events:
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == LEFT_BUTTON:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == LEFT_BUTTON or keys[pygame.K_SPACE]:
                 collision_right_stamp_with_player = pygame.Rect.collidepoint(self.stamp_right_rect, (player.x_pos, player.y_pos))
                 if collision_right_stamp_with_player:
                     return True
@@ -125,6 +129,8 @@ class Stamp():
             self.user_choice_contracts[index_of_current_dragged_contract] = False
     
     def add_stample_on_contract(self, is_it_left_stample, index_of_current_dragged_contract):
+        pygame.mixer.Sound.play(self.sound_stamp)
+
         if is_it_left_stample:
             x_stample = self.stamp_left_rect.x
             y_stample = self.stamp_left_rect.y

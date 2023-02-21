@@ -378,7 +378,7 @@ class Level_events():
         
         if collision_color_index == 3:
             if first_sector:
-                add_word_to_curse_words("fucking", 0)
+                add_word_to_curse_words("awful", 0)
             elif second_sector:
                 add_word_to_curse_words("nice", 0)
             elif third_sector:
@@ -398,7 +398,7 @@ class Level_events():
             elif second_sector:
                 add_word_to_curse_words("guy", 2)
             elif third_sector:
-                add_word_to_curse_words("fucker", 2)
+                add_word_to_curse_words("idiot", 2)
     
     def reset(self):
         self.events_enabled = False
@@ -413,3 +413,4 @@ class Level_events():
         self.keyboard = None
         self.mukbang = None
         self.stamp = None
+        self.index_of_dragged_rect = 0

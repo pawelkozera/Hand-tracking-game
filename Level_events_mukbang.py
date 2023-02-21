@@ -35,6 +35,8 @@ class Mukbang():
         self.food_rects = []
         self.__add_food_rects()
         self.food_removed_indexes = []
+
+        self.sound_eating = pygame.mixer.Sound("music/eating.wav")
     
     def __add_food_rects(self):
         move_closer_to_table_top = 20
@@ -100,6 +102,7 @@ class Mukbang():
             self.calories += 500
             self.food_collision_hide_food_rect(index_of_the_last_dragged_rect_food, food_rect)
             self.animation_time_since_eaten = pygame.time.get_ticks()
+            pygame.mixer.Sound.play(self.sound_eating)
         if dragged_food_collision_with_donation_box:
             self.donated_boxes += 1
             self.food_collision_hide_food_rect(index_of_the_last_dragged_rect_food, food_rect)
